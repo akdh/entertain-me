@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<ul>
+{% for suggestion in suggestions %}
+    <li data-id="{{ suggestion.id }}">
+        <a href="#">Like</a>
+        <a href="#">1</a>
+        <a href="#">2</a>
+        <a href="#">3</a>
+        <a href="#">4</a>
+        <a href="#">5</a>
+        <a href="{{ suggestion.url }}">{{ suggestion.title }}</a>
+    </li>
+{% endfor %}
+</ul>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/static/main.js"></script>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<ul>
+{% for location in locations %}
+    <li><a href="/{{ location.id }}/suggestions.html">{{ location.name }}</a></li>
+{% endfor %}
+</ul>
+{% endblock %}
