@@ -2,7 +2,7 @@ from flask import Flask, jsonify, render_template, request, g, session, redirect
 import requests, json, sqlite3, random
 
 DB_FILENAME = '../collection14.db'
-FALLBACK_SERVER = '127.0.0.1:5001'
+FALLBACK_URL = 'http://127.0.0.1:5001/suggestions'
 
 app = Flask(__name__)
 
@@ -42,18 +42,19 @@ def get_suggestions(user_id, location_id):
     conn = get_conn()
     db = conn.cursor()
 
-    db.execute('SELECT address FROM servers')
+    db.execute('SELECT url FROM servers')
     rows = db.fetchall()
     if len(rows) == 0:
-        server = FALLBACK_SERVER
+        url = FALLBACK_URL
     else:
-        server = random.choice(rows)[0]
+        url = random.choice(rows)[0]
 
     try:
-        r = requests.post('http://%s/suggestions' % server, data=json.dumps(data))
+        r = requests.post(url, json=data)
     except Timeout:
-        r = requests.post('http://%s/suggestions' % FALLBACK_SERVER, data=json.dumps(data))
-    suggestions = r.json()
+        r = requests.post(FALLBACK_URL, json=data)
+    data = r.json()
+    suggestions = data['suggestions']
 
     data = []
     for suggestion in suggestions:
@@ -144,7 +145,7 @@ def like(attraction_id):
     db.execute('INSERT OR IGNORE INTO preferences (id, attraction_id, `like`) VALUES (?, ?, ?)', (user_id, attraction_id, 1));
     db.execute('UPDATE preferences SET `like` = ? WHERE id = ? AND attraction_id = ?', (1, user_id, attraction_id));
     conn.commit()
-    return ''
+    return jsonify({'success': True})
 
 @app.route('/rate/<int:attraction_id>.json', methods=['POST'])
 def rate(attraction_id):
@@ -157,27 +158,39 @@ def rate(attraction_id):
     db.execute('INSERT OR IGNORE INTO preferences (id, attraction_id, rating) VALUES (?, ?, ?)', (user_id, attraction_id, rating));
     db.execute('UPDATE preferences SET rating = ? WHERE id = ? AND attraction_id = ?', (rating, user_id, attraction_id));
     conn.commit()
-    return ''
+    return jsonify({'success': True})
 
-@app.route('/register.json', methods=['POST'])
-def register_json():
-    data = request.get_json()
-    address = data['address']
+@app.route('/<key>/registrations', methods=['GET', 'POST', 'DELETE'])
+def registrations(key):
     conn = get_conn()
     db = conn.cursor()
-    db.execute('INSERT INTO servers (address) VALUES (?)', (address, ));
-    conn.commit()
-    return ''
 
-@app.route('/unregister.json', methods=['POST'])
-def unregister_json():
-    data = request.get_json()
-    address = data['address']
-    conn = get_conn()
-    db = conn.cursor()
-    db.execute('DELETE FROM servers WHERE address = ?', (address, ));
-    conn.commit()
-    return ''
+    if request.method == 'GET':
+        db.execute('SELECT url FROM servers WHERE key = ?', (key, ))
+        rows = db.fetchall()
+        urls = map(lambda row: {'callback_url': row[0]}, rows)
+        return jsonify({'callback_urls': urls})
+    elif request.method == 'POST':
+        data = request.get_json()
+        if 'callback_url' not in data:
+            abort(500)
+        url = data['callback_url']
+
+        r = requests.get(url)
+        if r.status_code != 200:
+            abort(500)
+
+        db.execute('INSERT INTO servers (key, url) VALUES (?, ?)', (key, url))
+        conn.commit()
+        return jsonify({'success': True})
+    elif request.method == 'DELETE':
+        data = request.get_json()
+        if 'callback_url' not in data:
+            abort(500)
+        url = data['callback_url']
+        db.execute('DELETE FROM servers WHERE key = ? AND url = ?', (key, url));
+        conn.commit()
+        return jsonify({'success': True})
 
 if __name__ == '__main__':
     app.config['SECRET_KEY'] = "\xf7\xc2\x13\xc2_':\xd7\xb2l\xc7l\xc0\x13<\x04\xe7lP1\x95\xa9\xc8B"
