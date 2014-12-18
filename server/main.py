@@ -19,11 +19,15 @@ def get_profile(user_id):
     conn = get_conn()
     db = conn.cursor()
 
-    db.execute('SELECT attraction_id, `like`, rating FROM preferences WHERE id = ?', (user_id, ))
-    rows = db.fetchall()
-    preferences = {}
+    rows = db.execute('SELECT value FROM preferences WHERE user_id = ? ORDER BY updated_on DESC', (user_id, ))
+    attraction_ids = set()
+    preferences = []
     for row in rows:
-        preferences[row[0]] = [row[1], row[2]]
+        row = json.loads(row[0])
+        if row['attraction_id'] in attraction_ids:
+            continue
+        attraction_ids.add(row['attraction_id'])
+        preferences.append(row)
 
     profile = {
         'id': user_id,
@@ -34,7 +38,7 @@ def get_profile(user_id):
 
 def get_suggestions(user_id, location_id):
     profile = get_profile(user_id)
-    data = {
+    request_data = {
         'location': location_id,
         'profile': profile
     }
@@ -50,11 +54,14 @@ def get_suggestions(user_id, location_id):
         url = random.choice(rows)[0]
 
     try:
-        r = requests.post(url, json=data)
+        r = requests.post(url, json=request_data)
     except Timeout:
-        r = requests.post(FALLBACK_URL, json=data)
-    data = r.json()
-    suggestions = data['suggestions']
+        r = requests.post(FALLBACK_URL, json=request_data)
+    response_data = r.json()
+    suggestions = response_data['suggestions']
+
+    db.execute('INSERT INTO suggestions (request, response) VALUES (?, ?)', (json.dumps(request_data), json.dumps(response_data)));
+    conn.commit()
 
     data = []
     for suggestion in suggestions:
@@ -100,24 +107,26 @@ def location_json():
     locations = get_locations()
     return jsonify(locations=locations)
 
+@app.route('/profile.html')
 @app.route('/<int:user_id>/profile.html')
-def profile(user_id):
+def profile(user_id = None):
+    if user_id is None and 'user' not in session:
+        abort(401)
+    if user_id is None:
+        user_id = session['user']
+
     conn = get_conn()
     db = conn.cursor()
 
     profile = get_profile(user_id)
     preferences = profile['preferences']
-    for attraction_id, preference in preferences.iteritems():
-        db.execute('SELECT id, title, url FROM documents WHERE id = ?', (attraction_id, ))
+    for i in range(len(preferences)):
+        preference = preferences[i]
+        db.execute('SELECT id, title, url FROM documents WHERE id = ?', (preference['attraction_id'], ))
         row = db.fetchone()
-        preferences[attraction_id] = {'id': row[0], 'title': row[1], 'url': row[2], 'like': preference[0], 'rating': preference[1]}
+        preferences[i]['attraction_info'] = {'id': row[0], 'title': row[1], 'url': row[2]}
 
     return render_template('profile.html', preferences=preferences)
-
-@app.route('/<int:user_id>/profile.json')
-def profile_json(user_id):
-    profile = get_profile(user_id)
-    return jsonify(profile['preferences'])
 
 @app.route('/<int:location_id>/suggestions.html')
 def suggestions(location_id):
@@ -135,30 +144,46 @@ def suggestions_json(location_id):
     suggestions = get_suggestions(user_id, location_id)
     return jsonify(suggestions=suggestions)
 
-@app.route('/like/<int:attraction_id>.json', methods=['POST'])
-def like(attraction_id):
-    if 'user' not in session:
+@app.route('/profile', methods=['GET', 'POST'])
+@app.route('/<int:user_id>/profile', methods=['GET'])
+def user_profile(user_id = None):
+    if user_id is None and 'user' not in session:
         abort(401)
-    user_id = session['user']
-    conn = get_conn()
-    db = conn.cursor()
-    db.execute('INSERT OR IGNORE INTO preferences (id, attraction_id, `like`) VALUES (?, ?, ?)', (user_id, attraction_id, 1));
-    db.execute('UPDATE preferences SET `like` = ? WHERE id = ? AND attraction_id = ?', (1, user_id, attraction_id));
-    conn.commit()
-    return jsonify({'success': True})
+    if user_id is None:
+        user_id = session['user']
 
-@app.route('/rate/<int:attraction_id>.json', methods=['POST'])
-def rate(attraction_id):
-    if 'user' not in session:
-        abort(401)
-    user_id = session['user']
-    rating = request.form.get('rating', type=int)
-    conn = get_conn()
-    db = conn.cursor()
-    db.execute('INSERT OR IGNORE INTO preferences (id, attraction_id, rating) VALUES (?, ?, ?)', (user_id, attraction_id, rating));
-    db.execute('UPDATE preferences SET rating = ? WHERE id = ? AND attraction_id = ?', (rating, user_id, attraction_id));
-    conn.commit()
-    return jsonify({'success': True})
+    if request.method == 'GET':
+        profile = get_profile(user_id)
+        return jsonify(profile)
+    elif request.method == 'POST':
+        conn = get_conn()
+        db = conn.cursor()
+
+        data = request.get_json()
+        if not set(data.keys()).issubset(set(['attraction_id', 'read', 'like', 'rating'])):
+            abort(500)
+        if 'attraction_id' not in data or type(data['attraction_id']) != int:
+            abort(500)
+        if 'read' in data and type(data['read']) != bool:
+            abort(500)
+        if 'like' in data and type(data['like']) != bool:
+            abort(500)
+        if 'rating' in data and data['rating'] not in [1, 2, 3, 4, 5]:
+            abort(500)
+
+        attraction_id = data['attraction_id']
+        db.execute('SELECT value FROM preferences WHERE user_id = ? AND attraction_id = ? ORDER BY updated_on DESC LIMIT 1', (user_id, attraction_id))
+        row = db.fetchone()
+        if row is None:
+            current = {'read': False, 'like': False, 'rating': None}
+        else:
+            current = json.loads(row[0])
+        current.update(data)
+
+        db.execute('INSERT INTO preferences (user_id, attraction_id, value, updated_on) VALUES (?, ?, ?, datetime())', (user_id, attraction_id, json.dumps(current)))
+        conn.commit()
+
+        return jsonify({'success': True})
 
 @app.route('/<key>/registrations', methods=['GET', 'POST', 'DELETE'])
 def registrations(key):

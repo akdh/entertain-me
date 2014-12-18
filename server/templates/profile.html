@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
 <ul>
-{% for attraction_id, preference in preferences.iteritems() %}
-    <li data-id="{{ attraction_id }}">
+{% for preference in preferences %}
+    <li data-id="{{ preference.attraction_id }}">
         <a href="#">Like</a>
         <a href="#">1</a>
         <a href="#">2</a>
         <a href="#">3</a>
         <a href="#">4</a>
         <a href="#">5</a>
-        <a href="{{ preference.url }}">{{ preference.title }}</a>
+        <a href="{{ preference.attraction_info.url }}">{{ preference.attraction_info.title }}</a>
     </li>
 {% endfor %}
 </ul>
