@@ -2,7 +2,7 @@
 {% block content %}
 <ul>
 {% for suggestion in suggestions %}
-    <li data-id="{{ suggestion.id }}">
+    <li data-id="{{ suggestion.id }}" data-user="{{ user_id }}">
         <a href="#">Like</a>
         <a href="#">1</a>
         <a href="#">2</a>
@@ -13,6 +13,6 @@
     </li>
 {% endfor %}
 </ul>
-<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="/static/jquery-1.11.2.min.js"></script>
 <script src="/static/main.js"></script>
 {% endblock %}

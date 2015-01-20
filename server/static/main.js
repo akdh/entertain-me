@@ -4,6 +4,7 @@ $(function() {
         var elem = $(event.target)
         var feedback = elem.text()
         var attraction_id = parseInt(elem.parent().data('id'), 10)
+        var user_id = elem.parent().data('user')
         data = {}
         data['attraction_id'] = attraction_id
         if(feedback === 'Like') {
@@ -15,7 +16,7 @@ $(function() {
         }
         $.ajax({
             type: 'POST',
-            url: '/profile',
+            url: '/' + user_id + '/profile',
             data: JSON.stringify(data),
             success: function() {
                 if(data['read'] === true) {
