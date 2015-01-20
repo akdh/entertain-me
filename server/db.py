@@ -31,9 +31,9 @@ def get_documents(doc_ids):
 
     data = []
     for doc_id in doc_ids:
-        result = conn.execute('SELECT id, title, url FROM documents WHERE id = ?', (doc_id, ))
+        result = conn.execute('SELECT id, title, url, description FROM documents WHERE id = ?', (doc_id, ))
         row = result.fetchone()
-        data.append({'id': row['id'], 'title': row['title'], 'url': row['url']})
+        data.append({'id': row['id'], 'title': row['title'], 'url': row['url'], 'description': row['description']})
     return data
 
 def get_callback_urls():

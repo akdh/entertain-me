@@ -1,4 +1,4 @@
-create table documents (id int primary key, title text, url text);
+create table documents (id int primary key, title text, url text, description text);
 .separator ","
 .import collection14.csv documents
 create table preferences (user_id int, attraction_id int, value text, updated_on date, primary key (user_id, attraction_id));
