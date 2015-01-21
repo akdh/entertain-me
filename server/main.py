@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, render_template, request, g, session, redirect, abort
-import requests, json, db, suggest
+import requests, json, db, suggest, itertools
 
 app = Flask(__name__)
 
@@ -26,6 +26,8 @@ def logout():
 @app.route('/locations.html')
 def location():
     locations = db.get_locations()
+    locations = sorted(locations, key=lambda x: x['state'])
+    locations = [(k, list(g)) for k, g in itertools.groupby(locations, key=lambda x: x['state'])]
     return render_template('locations.html', locations=locations)
 
 @app.route('/locations.json')

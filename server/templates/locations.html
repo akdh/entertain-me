@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
 <ul>
-{% for location in locations %}
-    <li><a href="/{{ location.id }}/suggestions.html">{{ location.name }}</a></li>
+{% for state, cities in locations %}
+    <h1>{{ state }}</h1>
+    {% for location in cities %}
+        <li><a href="/{{ location.id }}/suggestions.html">{{ location.name }}, {{ location.state }}</a></li>
+    {% endfor %}
 {% endfor %}
 </ul>
 {% endblock %}

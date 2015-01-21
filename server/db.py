@@ -16,7 +16,7 @@ def get_locations():
     result = conn.execute('SELECT id, name, state FROM locations')
     rows = result.fetchall()
 
-    return [{'id': row['id'], 'name': '%s, %s' % (row['name'], row['state'])} for row in rows]
+    return [{'id': row['id'], 'name': row['name'], 'state': row['state']} for row in rows]
 
 def is_valid_document(doc_id):
     conn = get_conn()
