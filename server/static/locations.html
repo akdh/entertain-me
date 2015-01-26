@@ -1,0 +1,43 @@
+<!doctype html>
+<html ng-app="app">
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.10/angular.min.js"></script>
+        <script>
+            angular.module('app', [])
+                .controller('App', function($scope, $http) {
+                    $http.get('/locations.json')
+                         .then(function(res) {
+                            var locations = res.data['locations']
+                            var grouped_locations = {}
+                            var states = []
+                            for(var i = 0; i < locations.length; i++) {
+                                if(grouped_locations[locations[i]['state']] === undefined) {
+                                    grouped_locations[locations[i]['state']] = []
+                                    states.push(locations[i]['state'])
+                                }
+                                grouped_locations[locations[i]['state']].push(locations[i])
+                            }
+
+                            states = states.sort()
+                            locations = []
+                            for(var i = 0; i < states.length; i++) {
+                                locations.push({state: states[i], locations: grouped_locations[states[i]]})
+                            }
+                            $scope.locations = locations
+                         })
+                })
+        </script>
+    </head>
+    <body>
+        <ul ng-controller="App">
+            <div ng-repeat="location in locations">
+                <h1>{{ location.state }}</h1>
+                <ul>
+                    <li ng-repeat="location in location.locations">
+                        <a href="/{{ location.id }}/suggestions.html">{{ location.name }}, {{ location.state }}</a>
+                    </li>
+                </ul>
+            </div>
+        </ul>
+    </body>
+</html>

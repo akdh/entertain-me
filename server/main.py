@@ -25,10 +25,7 @@ def logout():
 
 @app.route('/locations.html')
 def location():
-    locations = db.get_locations()
-    locations = sorted(locations, key=lambda x: x['state'])
-    locations = [(k, list(g)) for k, g in itertools.groupby(locations, key=lambda x: x['state'])]
-    return render_template('locations.html', locations=locations)
+    return app.send_static_file('locations.html')
 
 @app.route('/locations.json')
 def location_json():
