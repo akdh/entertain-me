@@ -1,0 +1,54 @@
+<!doctype html>
+<html ng-app="app">
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.10/angular.min.js"></script>
+        <script>
+            angular.module('app', [])
+                .controller('App', function($scope, $http) {
+                    var user_id = document.URL.split('/')[3]
+                    $http.get('/profile/' + user_id + '.json')
+                         .then(function(res) {
+                            var preferences = res.data['preferences']
+                            var document_ids = []
+                            for(var i = 0; i < preferences.length; i++) {
+                                document_ids.push(preferences[i]['attraction_id'])
+                            }
+                            return $http.get('/docs/_mult?ids=' +  document_ids.join())
+                         })
+                         .then(function(res) {
+                            $scope.documents = res.data['documents']
+                         })
+
+                    $scope.update_profile = function(doc, like, rating) {
+                        if(like !== null) {
+                            doc.preference.like = like
+                        }
+                        if(rating !== null) {
+                            doc.preference.rating = rating
+                        }
+                        var url = '/profile/' + user_id + '/' + doc.id
+                        $http.post(url, doc.preference)
+                    }
+                })
+        </script>
+        <style type="text/css">
+            .selected {
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <ul ng-controller="App">
+            <li ng-repeat="document in documents">
+                <h1><a href="{{ document.url }}">{{ document.title }}</a></h1>
+                <p>{{ document.description }}</p>
+                <a href="#" ng-class="{ selected: document.preference.like }" ng-click="update_profile(document, !document.preference.like, null)">Like</a>
+                <a href="#" ng-class="{ selected: document.preference.rating === 1 }" ng-click="update_profile(document, null, 1)">1</a>
+                <a href="#" ng-class="{ selected: document.preference.rating === 2 }" ng-click="update_profile(document, null, 2)">2</a>
+                <a href="#" ng-class="{ selected: document.preference.rating === 3 }" ng-click="update_profile(document, null, 3)">3</a>
+                <a href="#" ng-class="{ selected: document.preference.rating === 4 }" ng-click="update_profile(document, null, 4)">4</a>
+                <a href="#" ng-class="{ selected: document.preference.rating === 5 }" ng-click="update_profile(document, null, 5)">5</a>
+            </li>
+        </ul>
+    </body>
+</html>

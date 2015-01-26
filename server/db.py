@@ -60,7 +60,9 @@ def get_profile(user_id):
         if row['attraction_id'] in attraction_ids:
             continue
         attraction_ids.add(row['attraction_id'])
-        preferences.append(json.loads(row['value']))
+        value = json.loads(row['value'])
+        value['attraction_id'] = row['attraction_id']
+        preferences.append(value)
 
     profile = {
         'id': user_id,

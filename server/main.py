@@ -52,14 +52,7 @@ def suggestions_json(location_id):
 
 @app.route('/<user_id>/profile.html')
 def get_profile_html(user_id):
-    profile = db.get_profile(user_id)
-    preferences = profile['preferences']
-    attraction_ids = [preference['attraction_id'] for preference in preferences]
-    attractions = db.get_documents(attraction_ids)
-    for i in range(len(preferences)):
-        preferences[i]['attraction_info'] = attractions[i]
-
-    return render_template('profile.html', preferences=preferences)
+    return app.send_static_file('profile.html')
 
 @app.route('/profile.json', methods=['GET'])
 @app.route('/profile/<user_id>.json', methods=['GET'])
