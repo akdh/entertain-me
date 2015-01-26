@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request, g, session, redirect, abort
+from flask import Flask, jsonify, request, g, session, redirect, abort
 import requests, json, db, suggest, itertools
 
 app = Flask(__name__)
@@ -50,7 +50,7 @@ def suggestions_json(location_id):
     suggestions = suggest.get_suggestions(user_id, location_id)
     return jsonify(suggestions=suggestions)
 
-@app.route('/<user_id>/profile.html')
+@app.route('/profile/<user_id>.html')
 def get_profile_html(user_id):
     return app.send_static_file('profile.html')
 
