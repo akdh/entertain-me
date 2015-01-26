@@ -14,14 +14,14 @@ def login():
     if request.method == "POST":
         session['user'] = request.form['user']
         return redirect('/locations.html')
-    return render_template('login.html')
+    return app.send_static_file('login.html')
 
 @app.route('/logout.html', methods=["GET", "POST"])
 def logout():
     if request.method == "POST":
         session.pop('user', None)
         return redirect('/locations.html')
-    return render_template('logout.html')
+    return app.send_static_file('logout.html')
 
 @app.route('/locations.html')
 def location():
