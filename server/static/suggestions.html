@@ -5,7 +5,7 @@
         <script>
             angular.module('app', [])
                 .controller('App', function($scope, $http) {
-                    var profile_promise = $http.get('/profile/42.json')
+                    var profile_promise = $http.get('/profile.json')
                     var location_id = document.URL.split('/')[3]
                     var user_id
 
