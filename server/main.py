@@ -35,13 +35,15 @@ def location_json():
     locations = db.get_locations()
     return jsonify(locations=locations)
 
+@app.route('/docs/_mult')
+def get_mult_docs():
+    ids = map(int, request.args['ids'].split(','))
+    docs = db.get_documents(ids)
+    return jsonify({'documents': docs})
+
 @app.route('/<int:location_id>/suggestions.html')
 def suggestions(location_id):
-    if 'user' not in session:
-        abort(401)
-    user_id = session['user']
-    suggestions = suggest.get_suggestions(user_id, location_id)
-    return render_template('suggestions.html', suggestions=suggestions, user_id=user_id)
+    return app.send_static_file('suggestions.html')
 
 @app.route('/<int:location_id>/suggestions.json')
 def suggestions_json(location_id):
@@ -62,20 +64,25 @@ def get_profile_html(user_id):
 
     return render_template('profile.html', preferences=preferences)
 
-@app.route('/<user_id>/profile', methods=['GET'])
-def get_profile(user_id):
+@app.route('/profile.json', methods=['GET'])
+@app.route('/profile/<user_id>.json', methods=['GET'])
+def get_profile(user_id=None):
+    if user_id is None and 'user' in session:
+        user_id = session['user']
+    if user_id is None:
+        abort(401)
     profile = db.get_profile(user_id)
     return jsonify(profile)
 
-@app.route('/<user_id>/profile', methods=['POST'])
-def update_profile(user_id):
+@app.route('/profile/<user_id>/<int:attraction_id>', methods=['POST'])
+def update_profile(user_id, attraction_id):
     if 'user' not in session or session['user'] != user_id:
         abort(401)
 
     data = request.get_json()
     if not db.is_valid_profile(data):
         abort(500)
-    db.update_profile(user_id, data)
+    db.update_profile(user_id, attraction_id, data)
 
     return ''
 

@@ -58,4 +58,4 @@ def get_suggestions(user_id, location_id):
     }
 
     suggestions = fetch_suggestions(request_data)
-    return db.get_documents(suggestions)
+    return suggestions

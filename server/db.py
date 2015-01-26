@@ -51,17 +51,16 @@ def get_callback_urls():
 def get_profile(user_id):
     conn = get_conn()
 
-    result = conn.execute('SELECT value FROM preferences WHERE user_id = ? ORDER BY updated_on DESC', (user_id, ))
+    result = conn.execute('SELECT attraction_id, value FROM preferences WHERE user_id = ? ORDER BY updated_on DESC', (user_id, ))
     rows = result.fetchall()
 
     attraction_ids = set()
     preferences = []
     for row in rows:
-        row = json.loads(row['value'])
         if row['attraction_id'] in attraction_ids:
             continue
         attraction_ids.add(row['attraction_id'])
-        preferences.append(row)
+        preferences.append(json.loads(row['value']))
 
     profile = {
         'id': user_id,
@@ -70,10 +69,9 @@ def get_profile(user_id):
 
     return profile
 
-def update_profile(user_id, data):
+def update_profile(user_id, attraction_id, data):
     conn = get_conn()
 
-    attraction_id = data['attraction_id']
     result = conn.execute('SELECT value FROM preferences WHERE user_id = ? AND attraction_id = ? ORDER BY updated_on DESC LIMIT 1', (user_id, attraction_id))
     row = result.fetchone()
     if row is None:
@@ -86,9 +84,7 @@ def update_profile(user_id, data):
     conn.commit()
 
 def is_valid_profile(data):
-    if not set(data.keys()).issubset(set(['attraction_id', 'read', 'like', 'rating'])):
-        return False
-    if 'attraction_id' not in data or type(data['attraction_id']) != int:
+    if not set(data.keys()).issubset(set(['read', 'like', 'rating'])):
         return False
     if 'read' in data and type(data['read']) != bool:
         return False

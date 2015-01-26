@@ -6,7 +6,6 @@ $(function() {
         var attraction_id = parseInt(elem.parent().data('id'), 10)
         var user_id = elem.parent().data('user')
         data = {}
-        data['attraction_id'] = attraction_id
         if(feedback === 'Like') {
             data['like'] = true
         } else if($.inArray(feedback, ['1', '2', '3', '4', '5']) !== -1) {
@@ -16,7 +15,7 @@ $(function() {
         }
         $.ajax({
             type: 'POST',
-            url: '/' + user_id + '/profile',
+            url: '/profile/' + user_id + '/' + attraction_id,
             data: JSON.stringify(data),
             success: function() {
                 if(data['read'] === true) {
