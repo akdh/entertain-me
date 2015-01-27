@@ -1,7 +1,8 @@
 <!doctype html>
 <html ng-app="app">
     <head>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.10/angular.min.js"></script>
+        <link rel="stylesheet" href="/static/css/foundation.min.css" />
+        <script src="/static/js/angular.min.js"></script>
         <script>
             angular.module('app', [])
                 .controller('App', function($scope, $http) {
@@ -28,16 +29,18 @@
                 })
         </script>
     </head>
-    <body>
-        <ul ng-controller="App">
-            <div ng-repeat="location in locations">
-                <h1>{{ location.state }}</h1>
-                <ul>
-                    <li ng-repeat="location in location.locations">
-                        <a href="/{{ location.id }}/suggestions.html">{{ location.name }}, {{ location.state }}</a>
-                    </li>
-                </ul>
+    <body ng-controller="App">
+        <div class="row">
+            <div class="large-12 columns">
+                <div ng-repeat="location in locations">
+                    <h1>{{ location.state }}</h1>
+                    <ul>
+                        <li ng-repeat="location in location.locations">
+                            <a href="/{{ location.id }}/suggestions.html">{{ location.name }}, {{ location.state }}</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </ul>
+        </div>
     </body>
 </html>
