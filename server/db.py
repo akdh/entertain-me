@@ -39,7 +39,7 @@ def get_documents(doc_ids):
 def get_callback_urls():
     conn = get_conn()
 
-    result = conn.execute('SELECT url FROM servers')
+    result = conn.execute('SELECT DISTINCT url FROM servers')
     rows = result.fetchall()
 
     random.shuffle(rows)

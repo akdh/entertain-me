@@ -5,4 +5,5 @@ create table preferences (user_id int, attraction_id int, value text, updated_on
 create table locations (id int primary key, name text, state text, lat real, lng real);
 .import contexts14.csv locations
 create table servers (key text, url text);
-create table suggestions (response text, request text);
+create table suggestion_requests (body text);
+create table suggestion_responses (request_id int, url text, body text, primary key (request_id, url));

@@ -28,6 +28,14 @@ def fetch_suggestions(request_data):
     futures = concurrent.futures.wait(futures, timeout=1.0)
     futures = futures.done
 
+    cursor = conn.execute('INSERT INTO suggestion_requests (body) VALUES (?)', (json.dumps(request_data), ))
+    conn.commit()
+    request_id = cursor.lastrowid
+
+    for url in urls:
+        conn.execute('INSERT INTO suggestion_responses (request_id, url, body) VALUES (?, ?, ?)', (request_id, url, None))
+        conn.commit()
+
     all_suggestions = []
 
     for future in futures:
@@ -36,7 +44,7 @@ def fetch_suggestions(request_data):
             request_url = result.request.url
             response_data = result.json()
 
-            conn.execute('INSERT INTO suggestions (request, response) VALUES (?, ?)', (json.dumps(request_data), json.dumps(response_data)))
+            conn.execute('UPDATE suggestion_responses SET body = ? WHERE request_id = ? AND url = ?', (json.dumps(response_data), request_id, request_url))
             conn.commit()
 
             if len(futures) > 1 and request_url == FALLBACK_URL:
