@@ -104,3 +104,28 @@ def is_valid_suggestion(data):
     if any(not is_valid_document(suggestion_id) for suggestion_id in data['suggestions']):
         return False
     return True
+
+def get_servers(key):
+    conn = get_conn()
+    result = conn.execute('SELECT url FROM servers WHERE key = ? AND deleted_on IS NULL', (key,))
+    rows = result.fetchall()
+    return list(map(lambda row: {'callback_url': row[0]}, rows))
+
+def update_servers(key, url):
+    conn = get_conn()
+
+    result = conn.execute('SELECT url FROM servers WHERE key = ? AND url = ? AND deleted_on IS NULL', (key, url))
+    row = result.fetchone()
+    if row is not None:
+        return False
+
+    conn.execute('INSERT INTO servers (key, url, deleted_on) VALUES (?, ?, NULL)', (key, url))
+    conn.commit()
+
+    return True
+
+def delete_servers(key, url):
+    conn = get_conn()
+    cursor = conn.execute('UPDATE servers SET deleted_on = date("now") WHERE key = ? AND url = ? AND deleted_on IS NULL', (key, url))
+    conn.commit()
+    return cursor.rowcount == 1

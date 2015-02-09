@@ -78,37 +78,30 @@ def update_profile(user_id, attraction_id):
 
 @app.route('/<key>/registrations', methods=['GET'])
 def get_registrations(key):
-    conn = db.get_conn()
-    result = conn.execute('SELECT url FROM servers WHERE key = ?', (key, ))
-    rows = result.fetchall()
-    urls = list(map(lambda row: {'callback_url': row[0]}, rows))
+    urls = db.get_servers(key)
     return jsonify({'callback_urls': urls})
 
 @app.route('/<key>/registrations', methods=['POST'])
 def update_registrations(key):
-    conn = db.get_conn()
-    data = request.get_json()
-    if 'callback_url' not in data:
-        abort(500)
-    url = data['callback_url']
+    if 'callback_url' not in request.args:
+        abort(400)
+    url = request.args['callback_url']
 
     r = requests.get(url)
     if r.status_code != 200:
         abort(500)
 
-    conn.execute('INSERT INTO servers (key, url) VALUES (?, ?)', (key, url))
-    conn.commit()
+    if not db.update_servers(key, url):
+        abort(500)
     return ''
 
 @app.route('/<key>/registrations', methods=['DELETE'])
 def delete_registrations(key):
-    conn = db.get_conn()
-    data = request.get_json()
-    if 'callback_url' not in data:
-        abort(500)
-    url = data['callback_url']
-    conn.execute('DELETE FROM servers WHERE key = ? AND url = ?', (key, url));
-    conn.commit()
+    if 'callback_url' not in request.args:
+        abort(400)
+    url = request.args['callback_url']
+    if not db.delete_servers(key, url):
+        abort(404)
     return ''
 
 if __name__ == '__main__':

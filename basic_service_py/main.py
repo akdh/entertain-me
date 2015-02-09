@@ -22,7 +22,7 @@ def suggestions():
 
 @app.route('/register', methods=['GET'])
 def register():
-    r = requests.post(REGISTRATION_URL, json={'callback_url': 'http://127.0.0.1:5002/suggestions'})
+    r = requests.post(REGISTRATION_URL, params={'callback_url': 'http://127.0.0.1:5002/suggestions'})
     return str(r.status_code)
 
 if __name__ == '__main__':
