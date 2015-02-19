@@ -3,24 +3,65 @@
 
 A server that negotiates between users seeking personalized recommendations and multiple recommendation services.
 
-# Service API Documentation
+# Registering a Service
 
-```GET /:key/registrations```
+First you must issue a request to create your new service:
 
-Returns a list of callback URLs registered to your API key:
+```POST /api/services```
+
+The body of the request should be a JSON object with a password and an email, it is not required that you use a working email address, just one that you will remember (although if you provide us with a valid email address and forget your password we will be able to reset it for you):
 
     {
-      "callback_urls": [
-        {"callback_url": "http://127.0.0.1:5001/suggestions"},
-        {"callback_url": "http://127.0.0.1:5002/suggestions"}
-      ]
+      "password": "password",
+      "email": "service@example.com"
     }
 
-```POST /:key/registrations?callback_url=URL```
+If you recieve a 200 response code your service was succefully created, the response body will contain your service id:
 
-Registers the URL as a callback URL. In order to be valid the callback URL must respond to GET and POST requests.
+    {
+      "email": "service@example.com",
+      "id": 1
+    }
 
-Immediately after making the registration request a GET request will be sent to this URL, it must respond with a 200 HTTP status code. The URL will not be registered if the response to this request is not received.
+You must then login with the same credentials used above:
+
+```POST /api/services/login```
+
+Again, the body of the request should be a JSON object with the same password and email:
+
+    {
+      "password": "password",
+      "email": "service@example.com"
+    }
+
+If you recieve a 200 response code you sucefully logged in, the response body will contain the access token you must you in subsequent requests (the id property).
+
+    {
+      "id": "CdpAiW4nrK2frtn3YnRoppdqHJdWMw0uhGOHVNdRvkpkeyacRnOHcPB6Bqebxkse",
+      "ttl": 1209600,
+      "created": "2015-02-19T17:26:32.769Z",
+      "userId": 1
+    }
+
+Finally you must subscribe your server so that it receives suggestion requests:
+
+```POST /api/services/:id/subscriptions?access_token=ACCESS_TOKEN```
+
+(where ```:id``` is the service id returned when you created your service and ACCESS_TOKEN is the token returned in the login request)
+
+    {
+      "callback_url": "http://example.com/suggestions"
+    }
+
+If you recieve a 200 response code your server was succefully subscribed. The response code will contain a subscription id.
+
+    {
+      "callback_url": "http://example.com/suggestions",
+      "id": 1,
+      "serviceId": 1
+    }
+
+Your server must respond to POST requests send to the callback URL.
 
 If the URL is successfully registered a POST request will be sent to this URL whenever a user wants a list of suggestions. This request will contain a profile and a location, for example:
 
@@ -38,7 +79,7 @@ If the URL is successfully registered a POST request will be sent to this URL wh
         ]
       },
       "location": 145
-}
+    }
 
 The response to the request should be a list of valid point-of-interest IDs:
 
@@ -46,7 +87,12 @@ The response to the request should be a list of valid point-of-interest IDs:
 
 If you register multiple callback URLs each time a user want a list of suggestions one of the URLs will be selected at random.
 
-DELETE /:key/registrations?callback_url=URL
+Additionally you can get a list of callback URLs which you have subscribed with the following request:
 
-Unregisters the URL as a callback URL.
+```GET /api/services/:id/subscriptions?access_token=ACCESS_TOKEN```
 
+You can also ubsubscribe callback URLs with the following request
+
+```DELETE /api/services/:service_id/subscriptions/:subscription_id?access_token=ACCESS_TOKEN```
+
+(where ```:subscription_id``` is the id you received when you initially subscribed the callback URL)
