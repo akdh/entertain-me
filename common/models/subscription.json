@@ -1,0 +1,16 @@
+{
+  "name": "subscription",
+  "plural": "subscriptions",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "properties": {
+    "callback_url": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": []
+}

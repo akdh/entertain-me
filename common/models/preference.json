@@ -1,0 +1,26 @@
+{
+  "name": "preference",
+  "plural": "preferences",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "properties": {
+    "rating": {
+      "type": "number",
+      "required": true
+    },
+    "documentId": {
+      "type": "number",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "document": {
+      "type": "hasOne",
+      "model": "document",
+      "foreignKey": "documentId"
+    }
+  },
+  "acls": [],
+  "methods": []
+}

@@ -1,0 +1,54 @@
+{
+  "_meta": {
+    "sources": [
+      "loopback/common/models",
+      "loopback/server/models",
+      "../common/models",
+      "./models"
+    ]
+  },
+  "User": {
+    "dataSource": "db",
+    "public": false
+  },
+  "AccessToken": {
+    "dataSource": "db",
+    "public": false
+  },
+  "ACL": {
+    "dataSource": "db",
+    "public": false
+  },
+  "RoleMapping": {
+    "dataSource": "db",
+    "public": false
+  },
+  "Role": {
+    "dataSource": "db",
+    "public": false
+  },
+  "document": {
+    "dataSource": "db",
+    "public": true
+  },
+  "person": {
+    "dataSource": "db",
+    "public": true
+  },
+  "preference": {
+    "dataSource": "db",
+    "public": false
+  },
+  "subscription": {
+    "dataSource": "db",
+    "public": false
+  },
+  "location": {
+    "dataSource": "db",
+    "public": true
+  },
+  "service": {
+    "dataSource": "db",
+    "public": true
+  }
+}

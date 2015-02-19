@@ -1,0 +1,31 @@
+{
+  "name": "location",
+  "plural": "locations",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "hidden": [
+    "state"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "state": {
+      "type": "string",
+      "required": true
+    },
+    "lat": {
+      "type": "number",
+      "required": true
+    },
+    "lng": {
+      "type": "number",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": []
+}

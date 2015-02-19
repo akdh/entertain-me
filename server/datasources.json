@@ -1,0 +1,7 @@
+{
+  "db": {
+    "database": "entertainme",
+    "name": "db",
+    "connector": "postgresql"
+  }
+}
