@@ -16,7 +16,7 @@ The body of the request should be a JSON object with a password and an email, it
       "email": "service@example.com"
     }
 
-If you recieve a 200 response code your service was succefully created, the response body will contain your service id:
+If you receive a 200 response code your service was successfully created, the response body will contain your service id:
 
     {
       "email": "service@example.com",
@@ -34,7 +34,7 @@ Again, the body of the request should be a JSON object with the same password an
       "email": "service@example.com"
     }
 
-If you recieve a 200 response code you sucefully logged in, the response body will contain the access token you must you in subsequent requests (the id property).
+If you receive a 200 response code you successfully logged in, the response body will contain the access token you must you in subsequent requests (the id property).
 
     {
       "id": "CdpAiW4nrK2frtn3YnRoppdqHJdWMw0uhGOHVNdRvkpkeyacRnOHcPB6Bqebxkse",
@@ -53,7 +53,7 @@ Finally you must subscribe your server so that it receives suggestion requests:
       "callback_url": "http://example.com/suggestions"
     }
 
-If you recieve a 200 response code your server was succefully subscribed. The response code will contain a subscription id.
+If you receive a 200 response code your server was successfully subscribed. The response code will contain a subscription id.
 
     {
       "callback_url": "http://example.com/suggestions",
@@ -91,7 +91,7 @@ Additionally you can get a list of callback URLs which you have subscribed with 
 
 ```GET /api/services/:id/subscriptions?access_token=ACCESS_TOKEN```
 
-You can also ubsubscribe callback URLs with the following request
+You can also unsubscribe callback URLs with the following request
 
 ```DELETE /api/services/:service_id/subscriptions/:subscription_id?access_token=ACCESS_TOKEN```
 
