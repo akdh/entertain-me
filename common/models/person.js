@@ -66,7 +66,10 @@ module.exports = function(Person) {
                 // Return response
             }
 
-            Document.find({'where': {'id': {'inq': [7, 1, 4, 14, 66, 9]}}}, function(err, documents) {
+            var documentIds = [7, 1, 4, 14, 66, 9];
+            Document.find({'where': {'id': {'inq': documentIds}}}, function(err, documents) {
+                documentsById = _.indexBy(documents, 'id')
+                documents = _.map(documentIds, function(documentId) { return documentsById[documentId] })
                 cb(null, documents)
             })
 
