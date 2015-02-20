@@ -1,3 +1,11 @@
+// http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
 angular.module('app', ['lbServices'])
     .controller('Person', ['$scope', 'Person', function($scope, Person) {
         $scope.login = function() {
@@ -19,10 +27,13 @@ angular.module('app', ['lbServices'])
             $scope.locations = locations
         })
     }])
-    .controller('Suggestion', ['$scope', '$http', 'Person', function($scope, $http, Person) {
-        var suggestions_promise = $http.post('/suggestions' + window.location.search)
+    .controller('Suggestion', ['$scope', 'Person', function($scope, Person) {
         Person.getCurrent().$promise
         .then(function(person) {
+            var locationId = getParameterByName('locationId')
+            var personId = person.id
+            var suggestions_promise = Person.suggestions({'personId': personId, 'locationId': locationId}, {}).$promise
+
             $scope.person = person
             Person.prototype$__get__preferences({'id': person.id}).$promise
             .then(function(preferences) {
@@ -33,11 +44,11 @@ angular.module('app', ['lbServices'])
                 }
                 suggestions_promise
                 .then(function(res) {
-                    var documents = res.data
+                    var documents = res.documents
                     for(var i = 0; i < documents.length; i++) {
                         documents[i].preference = preferencesByDocumentId[documents[i].id]
                     }
-                    $scope.documents = res.data
+                    $scope.documents = documents
                 })
             })
         })
