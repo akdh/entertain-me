@@ -3,9 +3,6 @@
   "plural": "locations",
   "base": "PersistedModel",
   "idInjection": true,
-  "hidden": [
-    "state"
-  ],
   "properties": {
     "name": {
       "type": "string",
@@ -17,11 +14,13 @@
     },
     "lat": {
       "type": "number",
-      "required": true
+      "required": true,
+      "postgresql": {"dataType": "REAL"}
     },
     "lng": {
       "type": "number",
-      "required": true
+      "required": true,
+      "postgresql": {"dataType": "REAL"}
     }
   },
   "validations": [],

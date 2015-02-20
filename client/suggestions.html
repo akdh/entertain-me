@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+</head>
+<body ng-app="app">
+    <div ng-controller="Suggestion">
+        <div ng-repeat="document in documents">
+            <h2><a href="{{ document.url }}">{{ document.title }}</a></h2>
+            <p>{{ document.description }}</p>
+            <p><a href="{{ document.url }}">{{ document.url }}</a></p>
+            <p>
+                <input type="radio" ng-model="document.preference.rating" value="1" ng-change="updatePreference(document)"> 1
+                <input type="radio" ng-model="document.preference.rating" value="2" ng-change="updatePreference(document)"> 2
+                <input type="radio" ng-model="document.preference.rating" value="3" ng-change="updatePreference(document)"> 3
+                <input type="radio" ng-model="document.preference.rating" value="4" ng-change="updatePreference(document)"> 4
+                <input type="radio" ng-model="document.preference.rating" value="5" ng-change="updatePreference(document)"> 5
+            </p>
+            {{ document.rating }}
+        </div>
+    </div>
+    <script src="js/angular.min.js"></script>
+    <script src="js/angular-resource.min.js"></script>
+    <script src="js/lb-services.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

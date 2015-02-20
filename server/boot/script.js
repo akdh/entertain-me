@@ -39,6 +39,7 @@ var post = function(urlStr, data, callback) {
 
 module.exports = function(app) {
     var Service = app.models.service;
+    var Document = app.models.document;
 
     app.post('/suggestions', function(req, res) {
         if(!('personId' in req.query)) {
@@ -60,12 +61,22 @@ module.exports = function(app) {
             var urls = _.map(services, function(service) { return _.sample(service.subscriptions()).callback_url })
             var responses = [];
             var data = {'personId': req.query.personId, 'locationId': req.query.locationId};
-            post(urls[0], data, function(err, body) {
-                responses.push(body)
-                if(responses.length === urls.length) {
-                    res.json(responses)
-                }
+            _.each(urls, function(url) {
+                post(url, data, function(err, body) {
+                    responses.push(body)
+                    if(responses.length === urls.length) {
+                        // Return response
+                    }
+                })
             })
+            if(urls.length === 0) {
+                // Return response
+            }
+
+            Document.find({'where': {'id': {'inq': [7, 1, 4, 14, 66, 9]}}}, function(err, documents) {
+                res.json(documents)
+            })
+
         })
     })
 }

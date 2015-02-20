@@ -5,8 +5,7 @@
   "idInjection": true,
   "properties": {
     "rating": {
-      "type": "number",
-      "required": true
+      "type": "number"
     },
     "documentId": {
       "type": "number",
@@ -16,9 +15,8 @@
   "validations": [],
   "relations": {
     "document": {
-      "type": "hasOne",
-      "model": "document",
-      "foreignKey": "documentId"
+      "type": "belongsTo",
+      "model": "document"
     }
   },
   "acls": [],
