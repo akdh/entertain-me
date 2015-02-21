@@ -4,6 +4,7 @@ var https = require('https');
 var url = require('url');
 var loopback = require('loopback');
 var app = loopback();
+var Validator = require('jsonschema').Validator;
 
 var post = function(urlStr, data, callback) {
     var postStr = JSON.stringify(data);
@@ -39,10 +40,42 @@ var post = function(urlStr, data, callback) {
     req.end();
 }
 
+var schema = {
+    "type": "object",
+    "properties": {
+        "suggestions": {
+            "type": "array",
+            "items": {"type": "number"},
+            "maxItems": 50
+        }
+    }
+}
+
+var is_valid_response = function(response) {
+    var validator = new Validator();
+    var result = validator.validate(response, schema);
+    return result.valid;
+}
+
+var return_response = function(responses, cb) {
+    responses = _.filter(responses, is_valid_response);
+    responses = _.map(responses, function(response) { return response['suggestions'] });
+    var documentIds = _.without(_.flatten(_.zip.apply(_, responses)), undefined);
+    if(documentIds.length === 0) {
+        documentIds = [7, 1, 4, 14, 66, 9];
+    }
+
+    var Document = loopback.getModel('document');
+    Document.find({'where': {'id': {'inq': documentIds}}}, function(err, documents) {
+        documentsById = _.indexBy(documents, 'id');
+        documents = _.map(documentIds, function(documentId) { return documentsById[documentId] });
+        cb(null, documents);
+    });
+}
+
 module.exports = function(Person) {
     Person.suggestions = function(personId, locationId, cb) {
         var Service = loopback.getModel('service');
-        var Document = loopback.getModel('document');
 
         Service.find({'include': 'subscriptions'}, function(err, services) {
             // TODO: Limit the number of requests that are sent
@@ -58,21 +91,13 @@ module.exports = function(Person) {
                 post(url, data, function(err, body) {
                     responses.push(body)
                     if(responses.length === urls.length) {
-                        // Return response
+                        return_response(responses, cb);
                     }
                 })
             })
             if(urls.length === 0) {
-                // Return response
+                return_response(responses, cb);
             }
-
-            var documentIds = [7, 1, 4, 14, 66, 9];
-            Document.find({'where': {'id': {'inq': documentIds}}}, function(err, documents) {
-                documentsById = _.indexBy(documents, 'id')
-                documents = _.map(documentIds, function(documentId) { return documentsById[documentId] })
-                cb(null, documents)
-            })
-
         })
     }
 
