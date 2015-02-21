@@ -79,25 +79,34 @@ module.exports = function(Person) {
 
         Service.find({'include': 'subscriptions'}, function(err, services) {
             // TODO: Limit the number of requests that are sent
-            // TODO: Add a time limit to how long services can take to respond
             // TODO: Log the responses from each service
-            // TODO: Combine responses intelligently, log final response
+            // TODO: Log final response
 
             services = _.filter(services, function(service) { return service.subscriptions().length > 0 })
             var urls = _.map(services, function(service) { return _.sample(service.subscriptions()).callback_url })
             var responses = [];
             var data = {'personId': personId, 'locationId': locationId};
+            var responded = false;
             _.each(urls, function(url) {
                 post(url, data, function(err, body) {
                     responses.push(body)
-                    if(responses.length === urls.length) {
+                    if(!responded && responses.length === urls.length) {
+                        responded = true;
                         return_response(responses, cb);
                     }
                 })
             })
-            if(urls.length === 0) {
+            if(!responded && urls.length === 0) {
+                responded = true;
                 return_response(responses, cb);
             }
+
+            setTimeout(function() {
+                if(!responded) {
+                    responded = true;
+                    return_response(responses, cb);
+                }
+            }, 1000);
         })
     }
 
