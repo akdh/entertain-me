@@ -73,40 +73,69 @@ var return_response = function(responses, cb) {
     });
 }
 
-module.exports = function(Person) {
-    Person.suggestions = function(personId, locationId, cb) {
-        var Service = loopback.getModel('service');
+var request_suggestions = function(services, person, location, cb) {
+    // TODO: Limit the number of requests that are sent
+    // TODO: Log the responses from each service
+    // TODO: Log final response
 
-        Service.find({'include': 'subscriptions'}, function(err, services) {
-            // TODO: Limit the number of requests that are sent
-            // TODO: Log the responses from each service
-            // TODO: Log final response
-
-            services = _.filter(services, function(service) { return service.subscriptions().length > 0 })
-            var urls = _.map(services, function(service) { return _.sample(service.subscriptions()).callback_url })
-            var responses = [];
-            var data = {'personId': personId, 'locationId': locationId};
-            var responded = false;
-            _.each(urls, function(url) {
-                post(url, data, function(err, body) {
-                    responses.push(body)
-                    if(!responded && responses.length === urls.length) {
-                        responded = true;
-                        return_response(responses, cb);
-                    }
-                })
-            })
-            if(!responded && urls.length === 0) {
+    services = _.filter(services, function(service) { return service.subscriptions().length > 0 })
+    var urls = _.map(services, function(service) { return _.sample(service.subscriptions()).callback_url })
+    var responses = [];
+    var data = {'person': person, 'location': location};
+    var responded = false;
+    _.each(urls, function(url) {
+        post(url, data, function(err, body) {
+            responses.push(body)
+            if(!responded && responses.length === urls.length) {
                 responded = true;
                 return_response(responses, cb);
             }
+        })
+    })
+    if(!responded && urls.length === 0) {
+        responded = true;
+        return_response(responses, cb);
+    }
 
-            setTimeout(function() {
-                if(!responded) {
-                    responded = true;
-                    return_response(responses, cb);
+    setTimeout(function() {
+        if(!responded) {
+            responded = true;
+            return_response(responses, cb);
+        }
+    }, 1000);
+}
+
+module.exports = function(Person) {
+    Person.suggestions = function(personId, locationId, cb) {
+        var Service = loopback.getModel('service');
+        var Location = loopback.getModel('location');
+
+        Person.findOne({where: {id: personId}, include: {relation: 'preferences', scope: {fields: ['rating', 'documentId']}}, fields: {id: true}}, function(err, person) {
+            if(err) {
+                cb(err, null);
+                return;
+            }
+            if(person === null) {
+                cb("Invalid personId.", null);
+                return;
+            }
+            Location.findById(locationId, function(err, location) {
+                if(err) {
+                    cb(err, null);
+                    return;
                 }
-            }, 1000);
+                if(location === null) {
+                    cb("Invalide locationId.", null);
+                    return;
+                }
+                Service.find({'include': 'subscriptions'}, function(err, services) {
+                    if(err) {
+                        cb(err, null);
+                        return;
+                    }
+                    request_suggestions(services, person, location, cb);
+                })
+            })
         })
     }
 

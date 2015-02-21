@@ -9,8 +9,8 @@ MAX_ATTRACTION_ID = 75010
 @app.route('/suggestions', methods=['POST'])
 def suggestions():
     data = request.get_json()
-    location = data['locationId']
-    person = data['personId']
+    location = data['location']
+    person = data['person']
     suggestions = [random.randrange(0, MAX_ATTRACTION_ID) for i in range(10)]
     return jsonify({'suggestions': suggestions})
 

@@ -66,19 +66,22 @@ Your server must respond to POST requests send to the callback URL.
 If the URL is successfully registered a POST request will be sent to this URL whenever a user wants a list of suggestions. This request will contain a profile and a location, for example:
 
     {
-      "profile": {
-        "id": "42",
+      "location": {
+        "lng": -80.0851,
+        "lat": 42.1292,
+        "name": "Erie",
+        "state": "PA",
+        "id": 101
+      },
+      "person": {
+        "id": 1,
         "preferences": [
           {
-            "attraction_id": 35787,
-            "rating": null,
-            "read": false,
-            "like": true
-          },
-          ...
+            "documentId": 4536,
+            "rating": 3
+          }
         ]
-      },
-      "location": 145
+      }
     }
 
 The response to the request should be a list of valid point-of-interest IDs:
