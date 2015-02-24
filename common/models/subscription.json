@@ -3,12 +3,21 @@
   "plural": "subscriptions",
   "base": "PersistedModel",
   "idInjection": true,
+  "scope": {
+    "where": {
+      "deleted": null
+    }
+  },
   "properties": {
     "callback_url": {
       "type": "string",
       "required": true
+    },
+    "deleted": {
+      "type": "date"
     }
   },
+  "hidden": ["deleted"],
   "validations": [],
   "relations": {},
   "acls": [],

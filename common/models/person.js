@@ -106,6 +106,10 @@ var request_suggestions = function(services, person, location, cb) {
 }
 
 module.exports = function(Person) {
+    Person.disableRemoteMethod('deleteById', true);
+    Person.disableRemoteMethod('__delete__preferences', false);
+    Person.disableRemoteMethod('__destroyById__preferences', false);
+
     Person.suggestions = function(personId, locationId, cb) {
         var Service = loopback.getModel('service');
         var Location = loopback.getModel('location');

@@ -3,6 +3,11 @@
   "plural": "preferences",
   "base": "PersistedModel",
   "idInjection": true,
+  "scope": {
+    "where": {
+      "parentId": null
+    }
+  },
   "properties": {
     "rating": {
       "type": "number"
@@ -10,8 +15,15 @@
     "documentId": {
       "type": "number",
       "required": true
+    },
+    "updated": {
+      "type": "date"
+    },
+    "parentId": {
+      "type": "number"
     }
   },
+  "hidden": ["updated", "parentId"],
   "validations": [],
   "relations": {
     "document": {
