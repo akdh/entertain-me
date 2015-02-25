@@ -6,18 +6,24 @@
     "pretest": "jshint ."
   },
   "dependencies": {
+    "async": "^0.9.0",
     "compression": "^1.0.3",
     "errorhandler": "^1.1.1",
+    "jsonschema": "^1.0.0",
     "loopback": "^2.8.0",
     "loopback-boot": "^2.4.0",
+    "loopback-connector-postgresql": "^1.6.0",
     "loopback-datasource-juggler": "^2.7.0",
-    "serve-favicon": "^2.0.1"
+    "serve-favicon": "^2.0.1",
+    "underscore": "^1.8.2"
   },
   "optionalDependencies": {
     "loopback-explorer": "^1.1.0"
   },
   "devDependencies": {
-    "jshint": "^2.5.6"
+    "chai": "^2.1.0",
+    "jshint": "^2.5.6",
+    "mocha": "^2.1.0"
   },
   "repository": {
     "type": "",
