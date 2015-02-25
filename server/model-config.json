@@ -50,5 +50,13 @@
   "service": {
     "dataSource": "db",
     "public": true
+  },
+  "request": {
+    "dataSource": "db",
+    "public": false
+  },
+  "response": {
+    "dataSource": "db",
+    "public": false
   }
 }

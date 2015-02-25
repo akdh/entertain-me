@@ -1,0 +1,14 @@
+{
+  "name": "request",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "properties": {
+    "body": {
+      "type": "object"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": []
+}

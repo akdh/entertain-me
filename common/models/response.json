@@ -1,0 +1,25 @@
+{
+  "name": "response",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "properties": {
+    "body": {
+      "type": "object"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "request": {
+      "type": "belongsTo",
+      "model": "request",
+      "foreignKey": ""
+    },
+    "subscription": {
+      "type": "belongsTo",
+      "model": "subscription",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": []
+}

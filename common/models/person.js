@@ -3,8 +3,8 @@ var http = require('http');
 var https = require('https');
 var url = require('url');
 var loopback = require('loopback');
-var app = loopback();
 var Validator = require('jsonschema').Validator;
+var async = require('async');
 
 var post = function(urlStr, data, callback) {
     var postStr = JSON.stringify(data);
@@ -75,34 +75,42 @@ var return_response = function(responses, cb) {
 
 var request_suggestions = function(services, person, location, cb) {
     // TODO: Limit the number of requests that are sent
-    // TODO: Log the responses from each service
     // TODO: Log final response
+    var Request = loopback.getModel('request');
+    var Response = loopback.getModel('response');
 
     services = _.filter(services, function(service) { return service.subscriptions().length > 0 })
-    var urls = _.map(services, function(service) { return _.sample(service.subscriptions()).callback_url })
+    var subscriptions = _.map(services, function(service) { return _.sample(service.subscriptions()) })
     var responses = [];
     var data = {'person': person, 'location': location};
     var responded = false;
-    _.each(urls, function(url) {
-        post(url, data, function(err, body) {
-            responses.push(body)
-            if(!responded && responses.length === urls.length) {
-                responded = true;
-                return_response(responses, cb);
-            }
-        })
-    })
-    if(!responded && urls.length === 0) {
-        responded = true;
-        return_response(responses, cb);
-    }
 
-    setTimeout(function() {
-        if(!responded) {
+    Request.create({'body': data}, function(err, request) {
+        _.each(subscriptions, function(subscription) {
+            Response.create({'requestId': request.id, 'subscriptionId': subscription.id}, function(err, response) {
+                post(subscription.callback_url, data, function(err, body) {
+                    response.updateAttribute('body', body, function(err, response) {
+                        responses.push(body)
+                        if(!responded && responses.length === subscriptions.length) {
+                            responded = true;
+                            return_response(responses, cb);
+                        }
+                    })
+                })
+            })
+        })
+        if(!responded && subscriptions.length === 0) {
             responded = true;
             return_response(responses, cb);
         }
-    }, 1000);
+
+        setTimeout(function() {
+            if(!responded) {
+                responded = true;
+                return_response(responses, cb);
+            }
+        }, 1000);
+    })
 }
 
 module.exports = function(Person) {
@@ -114,32 +122,26 @@ module.exports = function(Person) {
         var Service = loopback.getModel('service');
         var Location = loopback.getModel('location');
 
-        Person.findOne({where: {id: personId}, include: {relation: 'preferences', scope: {fields: ['rating', 'documentId']}}, fields: {id: true}}, function(err, person) {
+        async.parallel({
+            person: function(cb) {
+                Person.findOne({where: {id: personId}, include: {relation: 'preferences', scope: {fields: ['rating', 'documentId']}}, fields: {id: true}}, cb);
+            },
+            location: function(cb) {
+                Location.findById(locationId, cb);
+            },
+            services: function(cb) {
+                Service.find({'include': 'subscriptions'}, cb);
+            }
+        }, function(err, results) {
             if(err) {
                 cb(err, null);
-                return;
-            }
-            if(person === null) {
+            } else if(results.person === null) {
                 cb("Invalid personId.", null);
-                return;
+            } else if(results.location === null) {
+                cb("Invalide locationId.", null);
+            } else {
+                request_suggestions(results.services, results.person, results.location, cb)
             }
-            Location.findById(locationId, function(err, location) {
-                if(err) {
-                    cb(err, null);
-                    return;
-                }
-                if(location === null) {
-                    cb("Invalide locationId.", null);
-                    return;
-                }
-                Service.find({'include': 'subscriptions'}, function(err, services) {
-                    if(err) {
-                        cb(err, null);
-                        return;
-                    }
-                    request_suggestions(services, person, location, cb);
-                })
-            })
         })
     }
 
