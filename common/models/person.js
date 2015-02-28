@@ -74,12 +74,12 @@ var return_response = function(request, responses, cb) {
 }
 
 var request_suggestions = function(services, person, location, cb) {
-    // TODO: Limit the number of requests that are sent
     // TODO: Log final response
     var Request = loopback.getModel('request');
     var Response = loopback.getModel('response');
 
     services = _.filter(services, function(service) { return service.subscriptions().length > 0 })
+    services = _.sample(services, 5)
     var subscriptions = _.map(services, function(service) { return _.sample(service.subscriptions()) })
     var responses = [];
     var data = {'person': person, 'location': location};
