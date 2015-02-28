@@ -5,7 +5,7 @@ A server that negotiates between users seeking personalized recommendations and 
 
 # Registering a Service
 
-First you must issue a request to create your new service:
+First you must issue an HTTP request to create your new service:
 
 ```POST /api/services```
 
@@ -61,7 +61,7 @@ If you receive a 200 response code your server was successfully subscribed. The 
       "serviceId": 1
     }
 
-Your server must respond to POST requests send to the callback URL.
+Your server must respond to POST requests sent to the callback URL.
 
 If the URL is successfully registered a POST request will be sent to this URL whenever a user wants a list of suggestions. This request will contain a profile and a location, for example:
 
@@ -88,7 +88,13 @@ The response to the request should be a list of valid point-of-interest IDs:
 
     {"suggestions": [42817, 53189, 24572, ...]}
 
-If you register multiple callback URLs each time a user want a list of suggestions one of the URLs will be selected at random.
+Note that each ID should be valid, if you want to test if an ID is valid you can check with:
+
+```GET /api/documents/:id```
+
+If you recieve a 200 response code then the ID is valid, however you should **not** be making these requests during a suggestion response because this will slow down your response time and you are expected to respond resonably quickly.
+
+If you register multiple callback URLs each time a user wants a list of suggestions one of the URLs will be selected at random.
 
 Additionally you can get a list of callback URLs which you have subscribed with the following request:
 
