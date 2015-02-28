@@ -57,7 +57,7 @@ var is_valid_response = function(response) {
     return result.valid;
 }
 
-var return_response = function(responses, cb) {
+var return_response = function(request, responses, cb) {
     responses = _.filter(responses, is_valid_response);
     responses = _.map(responses, function(response) { return response['suggestions'] });
     var documentIds = _.without(_.flatten(_.zip.apply(_, responses)), undefined);
@@ -69,7 +69,7 @@ var return_response = function(responses, cb) {
     Document.find({'where': {'id': {'inq': documentIds}}}, function(err, documents) {
         documentsById = _.indexBy(documents, 'id');
         documents = _.map(documentIds, function(documentId) { return documentsById[documentId] });
-        cb(null, documents);
+        cb(null, {documents: documents, requestId: request.id});
     });
 }
 
@@ -93,7 +93,7 @@ var request_suggestions = function(services, person, location, cb) {
                         responses.push(body)
                         if(!responded && responses.length === subscriptions.length) {
                             responded = true;
-                            return_response(responses, cb);
+                            return_response(request, responses, cb);
                         }
                     })
                 })
@@ -101,13 +101,13 @@ var request_suggestions = function(services, person, location, cb) {
         })
         if(!responded && subscriptions.length === 0) {
             responded = true;
-            return_response(responses, cb);
+            return_response(request, responses, cb);
         }
 
         setTimeout(function() {
             if(!responded) {
                 responded = true;
-                return_response(responses, cb);
+                return_response(request, responses, cb);
             }
         }, 1000);
     })
@@ -152,7 +152,7 @@ module.exports = function(Person) {
                 {'arg': 'personId', 'type': 'Number', 'required': true, 'http': { 'source': 'query' } },
                 {'arg': 'locationId', 'type': 'Number', 'required': true, 'http': { 'source': 'query' } }
             ],
-            'returns': {'arg': 'documents', 'type': 'Array'}
+            'returns': {'arg': 'documents', 'type': 'Object', 'root': true}
         }
     );
 };

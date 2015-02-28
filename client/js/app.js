@@ -49,12 +49,14 @@ angular.module('app', ['lbServices'])
                         documents[i].preference = preferencesByDocumentId[documents[i].id]
                     }
                     $scope.documents = documents
+                    $scope.requestId = res.requestId
                 })
             })
         })
 
         $scope.updatePreference = function(document) {
             var preference = document.preference
+            preference.requestId = $scope.requestId
             preference.documentId = preference.documentId || document.id
             if(preference.id) {
                 Person.prototype$__updateById__preferences({'id': $scope.person.id, 'fk': preference.id}, preference).$promise

@@ -19,6 +19,9 @@
     },
     "personId": {
       "required": true
+    },
+    "requestId": {
+      "required": true
     }
   },
   "hidden": ["updated", "parentId"],
