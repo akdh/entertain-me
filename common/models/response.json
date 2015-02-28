@@ -5,6 +5,12 @@
   "properties": {
     "body": {
       "type": "object"
+    },
+    "requestId": {
+      "required": true
+    },
+    "subscriptionId": {
+      "required": true
     }
   },
   "validations": [],

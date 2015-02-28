@@ -5,10 +5,29 @@
   "properties": {
     "body": {
       "type": "object"
+    },
+    "personId": {
+      "required": true
+    },
+    "locationId": {
+      "required": true
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "person": {
+      "type": "belongsTo",
+      "model": "person"
+    },
+    "location": {
+      "type": "belongsTo",
+      "model": "location"
+    },
+    "preferences": {
+      "type": "hasMany",
+      "model": "preference"
+    }
+  },
   "acls": [],
   "methods": []
 }

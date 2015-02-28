@@ -9,6 +9,8 @@ var create_update = function(Model, instance, cb) {
 }
 
 module.exports = function(Preference) {
+    Preference.validatesInclusionOf('rating', {in: [1, 2, 3, 4, 5]});
+
     Preference.observe('before save', function(ctx, next) {
         if(ctx.instance) {
             var oldInstance = JSON.parse(JSON.stringify(ctx.instance));

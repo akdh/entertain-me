@@ -15,6 +15,9 @@
     },
     "deleted": {
       "type": "date"
+    },
+    "serviceId": {
+      "required": true
     }
   },
   "hidden": ["deleted"],

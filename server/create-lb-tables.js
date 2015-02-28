@@ -4,6 +4,5 @@ var lbTables = ['User', 'AccessToken', 'ACL', 'RoleMapping', 'Role', 'document',
 ds.automigrate(lbTables, function(err) {
     if(err) throw err;
     console.log('Created.');
-    ds.connector.query('CREATE UNIQUE INDEX documentId_personId_idx ON preference (documentId, personId)');
     ds.disconnect();
 })

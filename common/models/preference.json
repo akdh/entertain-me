@@ -3,11 +3,6 @@
   "plural": "preferences",
   "base": "PersistedModel",
   "idInjection": true,
-  "scope": {
-    "where": {
-      "parentId": null
-    }
-  },
   "properties": {
     "rating": {
       "type": "number"
@@ -21,6 +16,9 @@
     },
     "parentId": {
       "type": "number"
+    },
+    "personId": {
+      "required": true
     }
   },
   "hidden": ["updated", "parentId"],

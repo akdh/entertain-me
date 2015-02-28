@@ -14,7 +14,10 @@
     "preferences": {
       "type": "hasMany",
       "model": "preference",
-      "foreignKey": ""
+      "foreignKey": "",
+      "scope": {
+        "where": { "parentId": null }
+      }
     }
   },
   "acls": [

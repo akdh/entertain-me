@@ -85,7 +85,7 @@ var request_suggestions = function(services, person, location, cb) {
     var data = {'person': person, 'location': location};
     var responded = false;
 
-    Request.create({'body': data}, function(err, request) {
+    Request.create({body: data, personId: person.id, locationId: location.id}, function(err, request) {
         _.each(subscriptions, function(subscription) {
             Response.create({'requestId': request.id, 'subscriptionId': subscription.id}, function(err, response) {
                 post(subscription.callback_url, data, function(err, body) {
