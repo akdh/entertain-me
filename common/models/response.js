@@ -1,6 +1,29 @@
 var _ = require('underscore');
+var Validator = require('jsonschema').Validator;
+
+var schema = {
+    "type": "object",
+    "properties": {
+        "suggestions": {
+            "type": "array",
+            "items": {"type": "number"},
+            "maxItems": 50
+        }
+    }
+}
 
 module.exports = function(Response) {
+    Response.observe('before save', function(ctx, next) {
+        if(ctx.instance && !ctx.instance.error) {
+            var validator = new Validator();
+            var result = validator.validate(ctx.instance.body, schema);
+            if(!result.valid) {
+                ctx.instance.error = result.errors;
+            }
+        }
+        next();
+    })
+
     Response.prototype.score = function(cb) {
         var documentIds = this.body.suggestions;
         this.request(function(err, request) {

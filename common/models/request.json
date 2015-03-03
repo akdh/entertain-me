@@ -26,6 +26,10 @@
     "preferences": {
       "type": "hasMany",
       "model": "preference"
+    },
+    "responses": {
+      "type": "hasMany",
+      "model": "response"
     }
   },
   "acls": [],

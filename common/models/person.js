@@ -1,66 +1,12 @@
 var _ = require('underscore');
-var http = require('http');
-var https = require('https');
-var url = require('url');
 var loopback = require('loopback');
-var Validator = require('jsonschema').Validator;
 var async = require('async');
-
-var post = function(urlStr, data, callback) {
-    var postStr = JSON.stringify(data);
-    var options = url.parse(urlStr);
-
-    var request = http.request;
-    if(options.protocol === 'https:') {
-        request = https.request;
-    }
-
-    options['method'] = 'POST';
-    options['headers'] = {
-        'Content-Type': 'application/json',
-        'Content-Length': postStr.length
-    };
-
-    var req = request(options, function(res) {
-        var body = '';
-        res.on('data', function(chunk) {
-            body += chunk;
-        });
-        res.on('end', function() {
-            try {
-                var obj = JSON.parse(body);
-                callback(null, obj);
-            } catch(err) {
-                callback(err, null)
-            }
-        })
-    })
-
-    req.write(postStr);
-    req.end();
-}
-
-var schema = {
-    "type": "object",
-    "properties": {
-        "suggestions": {
-            "type": "array",
-            "items": {"type": "number"},
-            "maxItems": 50
-        }
-    }
-}
-
-var is_valid_response = function(response) {
-    var validator = new Validator();
-    var result = validator.validate(response, schema);
-    return result.valid;
-}
+var request = require('../../server/request');
 
 var return_response = function(request, responses, cb) {
-    responses = _.filter(responses, is_valid_response);
-    responses = _.map(responses, function(response) { return response['suggestions'] });
-    var documentIds = _.without(_.flatten(_.zip.apply(_, responses)), undefined);
+    responses = _.reject(responses, function(response) { return response.error });
+    responses = _.map(responses, function(response) { return response.body['suggestions'] });
+    var documentIds = _.uniq(_.without(_.flatten(_.zip.apply(_, responses)), undefined));
     if(documentIds.length === 0) {
         documentIds = [7, 1, 4, 14, 66, 9];
     }
@@ -73,44 +19,46 @@ var return_response = function(request, responses, cb) {
     });
 }
 
+var post_with_timeout = function(url, options, cb) {
+    async.parallel([
+        function(cb) {
+            request.post(url, options, function(err, response, body) {
+                cb(err, {response: response, body: body})
+            })
+        },
+        function(cb) {
+            setTimeout(function() {
+                cb('Timed out!', null);
+            }, 1000);
+        }
+    ], function(err, results) {
+        cb(err, results[0] && results[0].response, results[0] && results[0].body)
+    });
+}
+
 var request_suggestions = function(services, person, location, cb) {
     // TODO: Log final response
     var Request = loopback.getModel('request');
-    var Response = loopback.getModel('response');
 
     services = _.filter(services, function(service) { return service.subscriptions().length > 0 })
     services = _.sample(services, 5)
     var subscriptions = _.map(services, function(service) { return _.sample(service.subscriptions()) })
-    var responses = [];
     var data = {'person': person, 'location': location};
-    var responded = false;
 
     Request.create({body: data, personId: person.id, locationId: location.id}, function(err, request) {
-        _.each(subscriptions, function(subscription) {
-            Response.create({'requestId': request.id, 'subscriptionId': subscription.id}, function(err, response) {
-                post(subscription.callback_url, data, function(err, body) {
-                    response.updateAttribute('body', body, function(err, response) {
-                        responses.push(body)
-                        if(!responded && responses.length === subscriptions.length) {
-                            responded = true;
-                            return_response(request, responses, cb);
-                        }
-                    })
-                })
-            })
-        })
-        if(!responded && subscriptions.length === 0) {
-            responded = true;
+        async.map(subscriptions, function(subscription, cb) {
+            post_with_timeout(subscription.callback_url, {json: data}, function(err, response, body) {
+                if(!err && response.statusCode != 200) {
+                    err = "HTTP status code must be 200, it was: " + response.statusCode;
+                }
+                request.responses.create({'subscriptionId': subscription.id, body: body, error: err}, function(err, response) {
+                    cb(null, response);
+                });
+            });
+        }, function(err, responses) {
             return_response(request, responses, cb);
-        }
-
-        setTimeout(function() {
-            if(!responded) {
-                responded = true;
-                return_response(request, responses, cb);
-            }
-        }, 1000);
-    })
+        });
+    });
 }
 
 module.exports = function(Person) {
