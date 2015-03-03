@@ -11,6 +11,12 @@
     },
     "subscriptionId": {
       "required": true
+    },
+    "error": {
+      "type": "string"
+    },
+    "updated": {
+      "type": "date"
     }
   },
   "validations": [],

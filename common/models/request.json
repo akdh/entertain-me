@@ -11,6 +11,9 @@
     },
     "locationId": {
       "required": true
+    },
+    "updated": {
+      "type": "date"
     }
   },
   "validations": [],

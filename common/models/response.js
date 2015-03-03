@@ -22,7 +22,16 @@ module.exports = function(Response) {
             }
         }
         next();
-    })
+    });
+
+    Response.observe('before save', function(ctx, next) {
+        if(ctx.instance) {
+            ctx.instance.updated = new Date();
+        } else {
+            ctx.data.updated = new Date();
+        }
+        next();
+    });
 
     Response.prototype.score = function(cb) {
         var documentIds = this.body.suggestions;
