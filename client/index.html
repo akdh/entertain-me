@@ -5,13 +5,7 @@
     <title></title>
 </head>
 <body ng-app="app">
-    <form ng-controller="Person">
-        <input type="text" ng-model="email">
-        <input type="password" ng-model="password">
-        <input type="submit" value="Login" ng-click="login()">
-        <input type="submit" value="Register" ng-click="register()">
-        <input type="submit" value="Logout" ng-click="logout()">
-    </form>
+    <div ng-include="'person.html'"></div>
     <div ng-controller="Location">
         <div ng-repeat="location in locations">
             <p><a href="/suggestions.html?locationId={{ location.id }}">{{ location.name }}, {{ location.state }}</a></p>

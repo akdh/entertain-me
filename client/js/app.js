@@ -8,17 +8,31 @@ function getParameterByName(name) {
 
 angular.module('app', ['lbServices'])
     .controller('Person', ['$scope', 'Person', function($scope, Person) {
+        Person.getCurrent().$promise
+        .then(function(person) {
+            $scope.person = person;
+        });
         $scope.login = function() {
-            Person.login({'email': $scope.email, 'password': $scope.password})
+            $scope.error = undefined;
+            Person.login({'email': $scope.email, 'password': $scope.password}).$promise
+            .then(function(person) {
+                $scope.person = person.user;
+            }, function(response) {
+                $scope.error = response.data.error.message;
+            })
         }
         $scope.register = function() {
+            $scope.error = undefined;
             Person.create({'email': $scope.email, 'password': $scope.password}).$promise
-            .then(function(person) {
-                console.log(person)
+            .then(function() {
+                $scope.login();
+            }, function(response) {
+                $scope.error = response.data.error.message;
             })
         }
         $scope.logout = function() {
-            Person.logout()
+            Person.logout();
+            $scope.person = undefined;
         }
     }])
     .controller('Location', ['$scope', 'Location', function($scope, Location) {

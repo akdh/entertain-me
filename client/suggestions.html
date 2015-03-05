@@ -5,6 +5,7 @@
     <title></title>
 </head>
 <body ng-app="app">
+    <div ng-include="'person.html'"></div>
     <div ng-controller="Suggestion">
         <div ng-repeat="document in documents">
             <h2><a href="{{ document.url }}">{{ document.title }}</a></h2>
