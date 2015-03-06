@@ -3,22 +3,36 @@
 <head>
     <meta charset="utf-8">
     <title></title>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-theme.min.css">
 </head>
 <body ng-app="app">
-    <div ng-include="'person.html'"></div>
-    <div ng-controller="Suggestion">
-        <div ng-repeat="document in documents">
-            <h2><a href="{{ document.url }}">{{ document.title }}</a></h2>
-            <p>{{ document.description }}</p>
-            <p><a href="{{ document.url }}">{{ document.url }}</a></p>
-            <p>
-                <input type="radio" ng-model="document.preference.rating" value="1" ng-change="updatePreference(document)"> 1
-                <input type="radio" ng-model="document.preference.rating" value="2" ng-change="updatePreference(document)"> 2
-                <input type="radio" ng-model="document.preference.rating" value="3" ng-change="updatePreference(document)"> 3
-                <input type="radio" ng-model="document.preference.rating" value="4" ng-change="updatePreference(document)"> 4
-                <input type="radio" ng-model="document.preference.rating" value="5" ng-change="updatePreference(document)"> 5
-            </p>
-            {{ document.rating }}
+    <div class="container-fluid">
+        <div ng-include="'person.html'"></div>
+        <div ng-controller="Suggestion">
+            <div ng-repeat="document in documents">
+                <h2><a href="{{ document.url }}">{{ document.title }}</a></h2>
+                <p>{{ document.description }}</p>
+                <p><a href="{{ document.url }}">{{ document.url }}</a></p>
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-default" ng-class="{active: document.preference.rating == 1}">
+                        <input type="radio" ng-model="document.preference.rating" value="1" ng-change="updatePreference(document)"> 1
+                    </label>
+                    <label class="btn btn-default" ng-class="{active: document.preference.rating == 2}">
+                        <input type="radio" ng-model="document.preference.rating" value="2" ng-change=" updatePreference(document)"> 2
+                    </label>
+                    <label class="btn btn-default" ng-class="{active: document.preference.rating == 3}">
+                        <input type="radio" ng-model="document.preference.rating" value="3" ng-change="updatePreference(document)"> 3
+                    </label>
+                    <label class="btn btn-default" ng-class="{active: document.preference.rating == 4}">
+                        <input type="radio" ng-model="document.preference.rating" value="4" ng-change="updatePreference(document)"> 4
+                    </label>
+                    <label class="btn btn-default" ng-class="{active: document.preference.rating == 5}">
+                        <input type="radio" ng-model="document.preference.rating" value="5" ng-change="updatePreference(document)"> 5
+                    </label>
+                </div>
+                {{ document.rating }}
+            </div>
         </div>
     </div>
     <script src="js/angular.min.js"></script>
