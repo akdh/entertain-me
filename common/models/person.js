@@ -96,11 +96,13 @@ module.exports = function(Person) {
     Person.remoteMethod(
         'suggestions',
         {
-            'accepts': [
-                {'arg': 'personId', 'type': 'Number', 'required': true, 'http': { 'source': 'query' } },
-                {'arg': 'locationId', 'type': 'Number', 'required': true, 'http': { 'source': 'query' } }
+            accepts: [
+                {arg: 'id', type: 'Number', required: true, description: 'User id'},
+                {arg: 'locationId', type: 'Number', required: true, http: {source: 'query'}},
             ],
-            'returns': {'arg': 'documents', 'type': 'Object', 'root': true}
+            description: 'Get a list of ordered suggestions.',
+            http: {path: '/:id/suggestions'},
+            returns: {arg: 'documents', type: 'Object', root: true}
         }
     );
 };
