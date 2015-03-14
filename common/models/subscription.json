@@ -18,6 +18,10 @@
     },
     "serviceId": {
       "required": true
+    },
+    "run": {
+      "type": "string",
+      "required": true
     }
   },
   "hidden": ["deleted"],
