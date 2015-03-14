@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var loopback = require('loopback');
 var async = require('async');
-var request = require('../../server/request');
+var request = require('request');
 
 var return_response = function(request, responses, cb) {
     responses = _.reject(responses, function(response) { return response.error });
@@ -20,6 +20,7 @@ var return_response = function(request, responses, cb) {
 }
 
 var post_with_timeout = function(url, options, cb) {
+    var timeout_error = 'Timed_out!';
     async.parallel([
         function(cb) {
             request.post(url, options, function(err, response, body) {
@@ -28,10 +29,13 @@ var post_with_timeout = function(url, options, cb) {
         },
         function(cb) {
             setTimeout(function() {
-                cb('Timed out!', null);
+                cb(timeout_error, null);
             }, 1000);
         }
     ], function(err, results) {
+        if(results[0] && err == timeout_error) {
+            err = null;
+        }
         cb(err, results[0] && results[0].response, results[0] && results[0].body)
     });
 }
