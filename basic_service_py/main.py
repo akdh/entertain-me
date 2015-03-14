@@ -39,14 +39,16 @@ def login(email, password):
 @click.argument('service_id')
 @click.argument('run')
 @click.argument('access_token')
-def register(service_id, run, access_token):
-    r = requests.post(API_BASE + '/services/%s/subscriptions?access_token=%s' % (service_id, access_token), data={'run': run, 'callback_url': 'http://127.0.0.1:5002/suggestions'})
+@click.argument('port', default=5002)
+def register(service_id, run, access_token, port):
+    r = requests.post(API_BASE + '/services/%s/subscriptions?access_token=%s' % (service_id, access_token), data={'run': run, 'callback_url': 'http://127.0.0.1:%d/suggestions' % port})
     print(r.status_code)
     print(r.json())
 
 @cli.command()
-def server():
-    app.run(debug=True, threaded=True, port=5002)
+@click.argument('port', default=5002)
+def server(port):
+    app.run(debug=True, threaded=True, port=port)
 
 if __name__ == '__main__':
     cli()
