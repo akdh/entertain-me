@@ -20,9 +20,10 @@ def cli():
 
 @cli.command()
 @click.argument('email')
+@click.argument('username')
 @click.argument('password')
-def create(email, password):
-    r = requests.post(API_BASE + '/services', data={'email': email, 'password': password})
+def create(email, username, password):
+    r = requests.post(API_BASE + '/services', data={'email': email, 'username': username, 'password': password})
     print(r.status_code)
     print(r.json())
 
@@ -36,9 +37,10 @@ def login(email, password):
 
 @cli.command()
 @click.argument('service_id')
+@click.argument('run')
 @click.argument('access_token')
-def register(service_id, access_token):
-    r = requests.post(API_BASE + '/services/%s/subscriptions?access_token=%s' % (service_id, access_token), data={'callback_url': 'http://127.0.0.1:5002/suggestions'})
+def register(service_id, run, access_token):
+    r = requests.post(API_BASE + '/services/%s/subscriptions?access_token=%s' % (service_id, access_token), data={'run': run, 'callback_url': 'http://127.0.0.1:5002/suggestions'})
     print(r.status_code)
     print(r.json())
 
