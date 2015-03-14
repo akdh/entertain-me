@@ -14,9 +14,8 @@ module.exports = function(Preference) {
     Preference.observe('before save', function(ctx, next) {
         if(ctx.instance) {
             var oldInstance = JSON.parse(JSON.stringify(ctx.instance));
-            if(!ctx.instance.parentId) {
-                ctx.instance.updated = new Date();
-            }
+            ctx.instance.updated = new Date();
+
             if(ctx.instance.isNewRecord()) {
                 next();
             } else {
