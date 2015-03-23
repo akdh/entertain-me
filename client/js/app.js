@@ -17,6 +17,7 @@ angular.module('app', ['lbServices'])
             Person.login({'email': $scope.email, 'password': $scope.password}).$promise
             .then(function(person) {
                 $scope.person = person.user;
+                window.location = '/';
             }, function(response) {
                 $scope.error = response.data.error.message;
             })
@@ -31,40 +32,46 @@ angular.module('app', ['lbServices'])
             })
         }
         $scope.logout = function() {
-            Person.logout();
+            Person.logout().$promise
+            .then(function() {
+                window.location = '/login.html'
+            })
             $scope.person = undefined;
         }
     }])
-    .controller('Location', ['$scope', 'Location', function($scope, Location) {
+    .controller('Location', ['$scope', '$location', 'Location', 'Person', function($scope, $location, Location, Person) {
+        if(!Person.getCurrentId()) {
+            window.location = '/login.html';
+        }
         Location.find().$promise
         .then(function(locations) {
             $scope.locations = locations
         })
     }])
     .controller('Suggestion', ['$scope', 'Person', function($scope, Person) {
-        Person.getCurrent().$promise
-        .then(function(person) {
-            var locationId = getParameterByName('locationId')
-            var personId = person.id
-            var suggestions_promise = Person.suggestions({'personId': personId, 'locationId': locationId}, {}).$promise
+        if(!Person.getCurrentId()) {
+            window.location = '/login.html';
+        }
 
-            $scope.person = person
-            Person.prototype$__get__preferences({'id': person.id}).$promise
-            .then(function(preferences) {
+        var locationId = getParameterByName('locationId')
+        var personId = Person.getCurrentId()
+        var suggestions_promise = Person.suggestions({'locationId': locationId}, {'id': personId}).$promise
 
-                var preferencesByDocumentId = {}
-                for(var i = 0; i < preferences.length; i++) {
-                    preferencesByDocumentId[preferences[i].documentId] = preferences[i]
+        Person.prototype$__get__preferences({'id': personId}).$promise
+        .then(function(preferences) {
+
+            var preferencesByDocumentId = {}
+            for(var i = 0; i < preferences.length; i++) {
+                preferencesByDocumentId[preferences[i].documentId] = preferences[i]
+            }
+            suggestions_promise
+            .then(function(res) {
+                var documents = res.documents
+                for(var i = 0; i < documents.length; i++) {
+                    documents[i].preference = preferencesByDocumentId[documents[i].id]
                 }
-                suggestions_promise
-                .then(function(res) {
-                    var documents = res.documents
-                    for(var i = 0; i < documents.length; i++) {
-                        documents[i].preference = preferencesByDocumentId[documents[i].id]
-                    }
-                    $scope.documents = documents
-                    $scope.requestId = res.requestId
-                })
+                $scope.documents = documents
+                $scope.requestId = res.requestId
             })
         })
 

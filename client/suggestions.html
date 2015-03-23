@@ -10,6 +10,7 @@
     <div class="container-fluid">
         <div ng-include="'person.html'"></div>
         <div ng-controller="Suggestion">
+            <h1>Places to try</h1>
             <div ng-repeat="document in documents">
                 <h2><a href="{{ document.url }}">{{ document.title }}</a></h2>
                 <p>{{ document.description }}</p>

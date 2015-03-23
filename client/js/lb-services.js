@@ -358,38 +358,6 @@ module.factory(
 
         /**
          * @ngdoc method
-         * @name lbServices.Person#prototype$__destroyById__preferences
-         * @methodOf lbServices.Person
-         *
-         * @description
-         *
-         * Delete a related item by id for preferences
-         *
-         * @param {Object=} parameters Request parameters.
-         *
-         *  - `id` – `{*}` - User id
-         *
-         *  - `fk` – `{*}` - Foreign key for preferences
-         *
-         * @param {function(Object,Object)=} successCb
-         *   Success callback with two arguments: `value`, `responseHeaders`.
-         *
-         * @param {function(Object)=} errorCb Error callback with one argument:
-         *   `httpResponse`.
-         *
-         * @returns {Object} An empty reference that will be
-         *   populated with the actual data once the response is returned
-         *   from the server.
-         *
-         * This method returns no data.
-         */
-        "prototype$__destroyById__preferences": {
-          url: urlBase + "/people/:id/preferences/:fk",
-          method: "DELETE"
-        },
-
-        /**
-         * @ngdoc method
          * @name lbServices.Person#prototype$__updateById__preferences
          * @methodOf lbServices.Person
          *
@@ -635,36 +603,6 @@ module.factory(
         "prototype$__create__preferences": {
           url: urlBase + "/people/:id/preferences",
           method: "POST"
-        },
-
-        /**
-         * @ngdoc method
-         * @name lbServices.Person#prototype$__delete__preferences
-         * @methodOf lbServices.Person
-         *
-         * @description
-         *
-         * Deletes all preferences of this model.
-         *
-         * @param {Object=} parameters Request parameters.
-         *
-         *  - `id` – `{*}` - User id
-         *
-         * @param {function(Object,Object)=} successCb
-         *   Success callback with two arguments: `value`, `responseHeaders`.
-         *
-         * @param {function(Object)=} errorCb Error callback with one argument:
-         *   `httpResponse`.
-         *
-         * @returns {Object} An empty reference that will be
-         *   populated with the actual data once the response is returned
-         *   from the server.
-         *
-         * This method returns no data.
-         */
-        "prototype$__delete__preferences": {
-          url: urlBase + "/people/:id/preferences",
-          method: "DELETE"
         },
 
         /**
@@ -945,36 +883,6 @@ module.factory(
 
         /**
          * @ngdoc method
-         * @name lbServices.Person#deleteById
-         * @methodOf lbServices.Person
-         *
-         * @description
-         *
-         * Delete a model instance by id from the data source
-         *
-         * @param {Object=} parameters Request parameters.
-         *
-         *  - `id` – `{*}` - Model id
-         *
-         * @param {function(Object,Object)=} successCb
-         *   Success callback with two arguments: `value`, `responseHeaders`.
-         *
-         * @param {function(Object)=} errorCb Error callback with one argument:
-         *   `httpResponse`.
-         *
-         * @returns {Object} An empty reference that will be
-         *   populated with the actual data once the response is returned
-         *   from the server.
-         *
-         * This method returns no data.
-         */
-        "deleteById": {
-          url: urlBase + "/people/:id",
-          method: "DELETE"
-        },
-
-        /**
-         * @ngdoc method
          * @name lbServices.Person#count
          * @methodOf lbServices.Person
          *
@@ -1155,7 +1063,7 @@ module.factory(
          *
          *  - `token` – `{string}` - 
          *
-         *  - `redirect` – `{string}` - 
+         *  - `redirect` – `{string=}` - 
          *
          * @param {function(Object,Object)=} successCb
          *   Success callback with two arguments: `value`, `responseHeaders`.
@@ -1216,19 +1124,15 @@ module.factory(
          *
          * @description
          *
-         * <em>
-         * (The remote method definition does not provide any description.)
-         * </em>
+         * Get a list of ordered suggestions.
          *
          * @param {Object=} parameters Request parameters.
-         *
-         *  - `personId` – `{Number}` - 
          *
          *  - `locationId` – `{Number}` - 
          *
          * @param {Object} postData Request data.
          *
-         * This method does not accept any data. Supply an empty object.
+         *  - `id` – `{Number}` - User id
          *
          * @param {function(Object,Object)=} successCb
          *   Success callback with two arguments: `value`, `responseHeaders`.
@@ -1240,12 +1144,13 @@ module.factory(
          *   populated with the actual data once the response is returned
          *   from the server.
          *
-         * Data properties:
-         *
-         *  - `documents` – `{Array=}` - 
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `Person` object.)
+         * </em>
          */
         "suggestions": {
-          url: urlBase + "/people/suggestions",
+          url: urlBase + "/people/:id/suggestions",
           method: "POST"
         },
 
@@ -1357,60 +1262,6 @@ module.factory(
          * This method returns no data.
          */
         R["update"] = R["updateAll"];
-
-        /**
-         * @ngdoc method
-         * @name lbServices.Person#destroyById
-         * @methodOf lbServices.Person
-         *
-         * @description
-         *
-         * Delete a model instance by id from the data source
-         *
-         * @param {Object=} parameters Request parameters.
-         *
-         *  - `id` – `{*}` - Model id
-         *
-         * @param {function(Object,Object)=} successCb
-         *   Success callback with two arguments: `value`, `responseHeaders`.
-         *
-         * @param {function(Object)=} errorCb Error callback with one argument:
-         *   `httpResponse`.
-         *
-         * @returns {Object} An empty reference that will be
-         *   populated with the actual data once the response is returned
-         *   from the server.
-         *
-         * This method returns no data.
-         */
-        R["destroyById"] = R["deleteById"];
-
-        /**
-         * @ngdoc method
-         * @name lbServices.Person#removeById
-         * @methodOf lbServices.Person
-         *
-         * @description
-         *
-         * Delete a model instance by id from the data source
-         *
-         * @param {Object=} parameters Request parameters.
-         *
-         *  - `id` – `{*}` - Model id
-         *
-         * @param {function(Object,Object)=} successCb
-         *   Success callback with two arguments: `value`, `responseHeaders`.
-         *
-         * @param {function(Object)=} errorCb Error callback with one argument:
-         *   `httpResponse`.
-         *
-         * @returns {Object} An empty reference that will be
-         *   populated with the actual data once the response is returned
-         *   from the server.
-         *
-         * This method returns no data.
-         */
-        R["removeById"] = R["deleteById"];
 
         /**
          * @ngdoc method
@@ -1839,45 +1690,6 @@ module.factory(
         "prototype$__destroyById__subscriptions": {
           url: urlBase + "/services/:id/subscriptions/:fk",
           method: "DELETE"
-        },
-
-        /**
-         * @ngdoc method
-         * @name lbServices.Service#prototype$__updateById__subscriptions
-         * @methodOf lbServices.Service
-         *
-         * @description
-         *
-         * Update a related item by id for subscriptions
-         *
-         * @param {Object=} parameters Request parameters.
-         *
-         *  - `id` – `{*}` - User id
-         *
-         *  - `fk` – `{*}` - Foreign key for subscriptions
-         *
-         * @param {Object} postData Request data.
-         *
-         * This method expects a subset of model properties as request parameters.
-         *
-         * @param {function(Object,Object)=} successCb
-         *   Success callback with two arguments: `value`, `responseHeaders`.
-         *
-         * @param {function(Object)=} errorCb Error callback with one argument:
-         *   `httpResponse`.
-         *
-         * @returns {Object} An empty reference that will be
-         *   populated with the actual data once the response is returned
-         *   from the server.
-         *
-         * <em>
-         * (The remote method definition does not provide any description.
-         * This usually means the response is a `Service` object.)
-         * </em>
-         */
-        "prototype$__updateById__subscriptions": {
-          url: urlBase + "/services/:id/subscriptions/:fk",
-          method: "PUT"
         },
 
         /**
@@ -2398,36 +2210,6 @@ module.factory(
 
         /**
          * @ngdoc method
-         * @name lbServices.Service#deleteById
-         * @methodOf lbServices.Service
-         *
-         * @description
-         *
-         * Delete a model instance by id from the data source
-         *
-         * @param {Object=} parameters Request parameters.
-         *
-         *  - `id` – `{*}` - Model id
-         *
-         * @param {function(Object,Object)=} successCb
-         *   Success callback with two arguments: `value`, `responseHeaders`.
-         *
-         * @param {function(Object)=} errorCb Error callback with one argument:
-         *   `httpResponse`.
-         *
-         * @returns {Object} An empty reference that will be
-         *   populated with the actual data once the response is returned
-         *   from the server.
-         *
-         * This method returns no data.
-         */
-        "deleteById": {
-          url: urlBase + "/services/:id",
-          method: "DELETE"
-        },
-
-        /**
-         * @ngdoc method
          * @name lbServices.Service#count
          * @methodOf lbServices.Service
          *
@@ -2608,7 +2390,7 @@ module.factory(
          *
          *  - `token` – `{string}` - 
          *
-         *  - `redirect` – `{string}` - 
+         *  - `redirect` – `{string=}` - 
          *
          * @param {function(Object,Object)=} successCb
          *   Success callback with two arguments: `value`, `responseHeaders`.
@@ -2770,60 +2552,6 @@ module.factory(
          * This method returns no data.
          */
         R["update"] = R["updateAll"];
-
-        /**
-         * @ngdoc method
-         * @name lbServices.Service#destroyById
-         * @methodOf lbServices.Service
-         *
-         * @description
-         *
-         * Delete a model instance by id from the data source
-         *
-         * @param {Object=} parameters Request parameters.
-         *
-         *  - `id` – `{*}` - Model id
-         *
-         * @param {function(Object,Object)=} successCb
-         *   Success callback with two arguments: `value`, `responseHeaders`.
-         *
-         * @param {function(Object)=} errorCb Error callback with one argument:
-         *   `httpResponse`.
-         *
-         * @returns {Object} An empty reference that will be
-         *   populated with the actual data once the response is returned
-         *   from the server.
-         *
-         * This method returns no data.
-         */
-        R["destroyById"] = R["deleteById"];
-
-        /**
-         * @ngdoc method
-         * @name lbServices.Service#removeById
-         * @methodOf lbServices.Service
-         *
-         * @description
-         *
-         * Delete a model instance by id from the data source
-         *
-         * @param {Object=} parameters Request parameters.
-         *
-         *  - `id` – `{*}` - Model id
-         *
-         * @param {function(Object,Object)=} successCb
-         *   Success callback with two arguments: `value`, `responseHeaders`.
-         *
-         * @param {function(Object)=} errorCb Error callback with one argument:
-         *   `httpResponse`.
-         *
-         * @returns {Object} An empty reference that will be
-         *   populated with the actual data once the response is returned
-         *   from the server.
-         *
-         * This method returns no data.
-         */
-        R["removeById"] = R["deleteById"];
 
         /**
          * @ngdoc method

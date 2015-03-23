@@ -9,6 +9,7 @@
 <body ng-app="app">
     <div class="container-fluid">
         <div ng-include="'person.html'"></div>
+        <h1>Pick a city</h1>
         <div ng-controller="Location">
             <div ng-repeat="location in locations">
                 <p><a href="/suggestions.html?locationId={{ location.id }}">{{ location.name }}, {{ location.state }}</a></p>
