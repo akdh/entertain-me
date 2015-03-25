@@ -30,5 +30,19 @@
     "type": "",
     "url": ""
   },
-  "description": "entertain-me"
+  "description": "entertain-me",
+  "bundleDependencies": [
+    "async",
+    "compression",
+    "errorhandler",
+    "jsonschema",
+    "loopback",
+    "loopback-boot",
+    "loopback-connector-postgresql",
+    "loopback-datasource-juggler",
+    "loopback-explorer",
+    "request",
+    "serve-favicon",
+    "underscore"
+  ]
 }
