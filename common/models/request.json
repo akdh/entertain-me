@@ -7,10 +7,14 @@
       "type": "object"
     },
     "personId": {
-      "required": true
+      "type": {
+        "required": true
+      }
     },
     "locationId": {
-      "required": true
+      "type": {
+        "required": true
+      }
     },
     "updated": {
       "type": "date"

@@ -7,10 +7,14 @@
       "type": "object"
     },
     "requestId": {
-      "required": true
+      "type": {
+        "required": true
+      }
     },
     "subscriptionId": {
-      "required": true
+      "type": {
+        "required": true
+      }
     },
     "error": {
       "type": "string"

@@ -8,6 +8,9 @@
       "deleted": null
     }
   },
+  "hidden": [
+    "deleted"
+  ],
   "properties": {
     "callback_url": {
       "type": "string",
@@ -17,14 +20,15 @@
       "type": "date"
     },
     "serviceId": {
-      "required": true
+      "type": {
+        "required": true
+      }
     },
     "run": {
       "type": "string",
       "required": true
     }
   },
-  "hidden": ["deleted"],
   "validations": [],
   "relations": {},
   "acls": [],

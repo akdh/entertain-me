@@ -15,12 +15,16 @@
     "lat": {
       "type": "number",
       "required": true,
-      "postgresql": {"dataType": "REAL"}
+      "postgresql": {
+        "dataType": "REAL"
+      }
     },
     "lng": {
       "type": "number",
       "required": true,
-      "postgresql": {"dataType": "REAL"}
+      "postgresql": {
+        "dataType": "REAL"
+      }
     }
   },
   "validations": [],

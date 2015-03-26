@@ -16,7 +16,9 @@
       "model": "preference",
       "foreignKey": "",
       "scope": {
-        "where": { "parentId": null }
+        "where": {
+          "parentId": null
+        }
       }
     }
   },

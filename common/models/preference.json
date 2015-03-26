@@ -3,6 +3,10 @@
   "plural": "preferences",
   "base": "PersistedModel",
   "idInjection": true,
+  "hidden": [
+    "updated",
+    "parentId"
+  ],
   "properties": {
     "rating": {
       "type": "number"
@@ -18,13 +22,16 @@
       "type": "number"
     },
     "personId": {
-      "required": true
+      "type": {
+        "required": true
+      }
     },
     "requestId": {
-      "required": true
+      "type": {
+        "required": true
+      }
     }
   },
-  "hidden": ["updated", "parentId"],
   "validations": [],
   "relations": {
     "document": {
