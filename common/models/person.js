@@ -20,20 +20,20 @@ var return_response = function(request, responses, cb) {
 }
 
 var post_with_timeout = function(url, options, cb) {
-    var timeout_error = 'Timed_out!';
     async.parallel([
         function(cb) {
             request.post(url, options, function(err, response, body) {
+                err = err || "No error";
                 cb(err, {response: response, body: body})
             })
         },
         function(cb) {
             setTimeout(function() {
-                cb(timeout_error, null);
-            }, 1000);
+                cb("Timed out.", null);
+            }, 3000);
         }
     ], function(err, results) {
-        if(results[0] && err == timeout_error) {
+        if(err == "No error") {
             err = null;
         }
         cb(err, results[0] && results[0].response, results[0] && results[0].body)
