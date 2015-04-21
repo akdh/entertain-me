@@ -19,27 +19,6 @@ var return_response = function(request, responses, cb) {
     });
 }
 
-var post_with_timeout = function(url, options, cb) {
-    async.parallel([
-        function(cb) {
-            request.post(url, options, function(err, response, body) {
-                err = err || "No error";
-                cb(err, {response: response, body: body})
-            })
-        },
-        function(cb) {
-            setTimeout(function() {
-                cb("Timed out.", null);
-            }, 3000);
-        }
-    ], function(err, results) {
-        if(err == "No error") {
-            err = null;
-        }
-        cb(err, results[0] && results[0].response, results[0] && results[0].body)
-    });
-}
-
 var request_suggestions = function(services, person, location, cb) {
     // TODO: Log final response
     var Request = loopback.getModel('request');
@@ -51,7 +30,7 @@ var request_suggestions = function(services, person, location, cb) {
 
     Request.create({body: data, personId: person.id, locationId: location.id}, function(err, request) {
         async.map(subscriptions, function(subscription, cb) {
-            post_with_timeout(subscription.callback_url, {json: data}, function(err, response, body) {
+            request.post(subscription.callback_url, {json: data}, function(err, response, body) {
                 if(!err && response.statusCode != 200) {
                     err = "HTTP status code must be 200, it was: " + response.statusCode;
                 }
