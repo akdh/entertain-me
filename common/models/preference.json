@@ -22,14 +22,13 @@
       "type": "number"
     },
     "personId": {
-      "type": {
-        "required": true
-      }
+      "required": true
     },
     "requestId": {
-      "type": {
-        "required": true
-      }
+      "required": true
+    },
+    "tags": {
+      "type": ["String"]
     }
   },
   "validations": [],
