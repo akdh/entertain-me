@@ -1,0 +1,8 @@
+        <h1>Pick a city</h1>
+        <div>
+            {{#each locations}}
+            <div>
+                <p><a href="/client/suggestions.html?locationId={{ id }}&access_token={{ ../accessToken }}">{{ name }}, {{ state }}</a></p>
+            </div>
+            {{/each}}
+        </div>

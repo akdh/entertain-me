@@ -1,0 +1,72 @@
+        <div>
+            <h1>Places to try</h1>
+            {{#each suggestions.documents}}
+            <div class="document"{{#if preference}} data-preference-id="{{ preference.id }}"{{/if}} data-document-id="{{ id }}">
+                <h2><a href="{{ url }}" target="_blank">{{ title }}</a></h2>
+                <p>{{ description }}</p>
+                <p><a href="{{ url }}" target="_blank">{{ url }}</a></p>
+                <div class="btn-group form-group" data-toggle="buttons">
+                    <label class="btn btn-default">
+                        <input type="radio" value="1" name="doc{{ id }}_rating"> 1
+                    </label>
+                    <label class="btn btn-default">
+                        <input type="radio" value="2" name="doc{{ id }}_rating"> 2
+                    </label>
+                    <label class="btn btn-default">
+                        <input type="radio" value="3" name="doc{{ id }}_rating"> 3
+                    </label>
+                    <label class="btn btn-default">
+                        <input type="radio" value="4" name="doc{{ id }}_rating"> 4
+                    </label>
+                    <label class="btn btn-default">
+                        <input type="radio" value="5" name="doc{{ id }}_rating"> 5
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="doc{{ id }}_tags"></label>
+                    <select multiple name="doc{{ id }}_tags" id="doc{{ id }}_tags" class="tags"></select>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        <script>
+            if (!String.prototype.endsWith) {
+              String.prototype.endsWith = function(searchString, position) {
+                  var subjectString = this.toString();
+                  if (position === undefined || position > subjectString.length) {
+                    position = subjectString.length;
+                  }
+                  position -= searchString.length;
+                  var lastIndex = subjectString.indexOf(searchString, position);
+                  return lastIndex !== -1 && lastIndex === position;
+              };
+            }
+            $(function() {
+                var requestId = "{{ suggestions.requestId }}";
+                var accessToken = "{{ accessToken }}";
+                var userId = "{{ person.id }}";
+
+                $("input, select").change(function() {
+                    var cb = function(data) {
+                        console.log(data);
+                    }
+                    var parent = $(this).parents('.document');
+                    var documentId = parent.data('document-id');
+                    var preferenceId = parent.data('preference-id');
+                    var data = {documentId: documentId, requestId: requestId};
+                    if($(this).attr('name').endsWith('_rating')) {
+                        data.rating = $(this).val();
+                    }
+                    if($(this).attr('name').endsWith('_tags')) {
+                        data.tags = $(this).val();
+                    }
+                    if(preferenceId) {
+                        var url = '/api/people/'+userId+'/preferences/'+preferenceId+'?access_token=' + accessToken;
+                        $.ajax(url, {data: data, method: 'PUT', success: cb});
+                    } else {
+                        var url = '/api/people/'+userId+'/preferences?access_token=' + accessToken;
+                        $.ajax(url, {data: data, method: 'POST', success: cb});
+                    }
+                });
+            });
+        </script>
