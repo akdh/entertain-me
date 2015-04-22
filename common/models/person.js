@@ -71,13 +71,13 @@ module.exports = function(Person) {
                 cb("Invalid personId.", null);
             } else if(results.location === null) {
                 cb("Invalide locationId.", null);
-            } else if(!(type in [null, 'Business', 'Holiday', 'Other'])) {
-                cb("Invalid trip type.", null);
-            } else if(!(duration in [null, 'Night out', 'Day trip', 'Weekend trip', 'Longer'])) {
+            } else if(!(type == null || type in ['Business', 'Holiday', 'Other'])) {
+                cb("Invalid trip type: " + type, null);
+            } else if(!(duration == null || duration in ['Night out', 'Day trip', 'Weekend trip', 'Longer'])) {
                 cb("Invalid trip duration.", null);
-            } else if(!(group in [null, 'Alone', 'Friends', 'Family', 'Other'])) {
+            } else if(!(group == null || group in ['Alone', 'Friends', 'Family', 'Other'])) {
                 cb("Invalid group type.", null);
-            } else if(!(season in [null, 'Winter', 'Summer', 'Autumn', 'Spring'])) {
+            } else if(!(season == null || season in ['Winter', 'Summer', 'Autumn', 'Spring'])) {
                 cb("Invalid trip season.", null);
             } else {
                 var data = {person: results.person, location: results.location, type: type, duration: duration, group: group, season: season};
