@@ -6,6 +6,12 @@
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap-theme.min.css">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap-tagsinput.css">
+    <link rel="stylesheet" type="text/css" href="/css/typeaheadjs.css">
+    <style type="text/css">
+        .bootstrap-tagsinput {
+            width: 100%;
+        }
+    </style>
     <script src="/js/jquery-1.11.2.min.js"></script>
 </head>
 <body>
@@ -52,7 +58,7 @@
 
         bhStates.initialize();
 
-        $(".tags").tagsinput({
+        $(".typeahead").tagsinput({
             typeaheadjs: {
                 name: 'bhStates',
                 displayKey: 'value',
