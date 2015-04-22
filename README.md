@@ -56,6 +56,8 @@ Where ```:id``` is the service id returned when you created your service and ACC
       "run": "runA"
     }
 
+Your server will be sent a suggestion request immediately to this URL, the server must respond to this request, without errors, in order to successfully subscribe.
+
 If you receive a 200 response code your server was successfully subscribed. The response code will contain a subscription id.
 
     {
