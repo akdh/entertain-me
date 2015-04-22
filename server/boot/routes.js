@@ -43,10 +43,6 @@ module.exports = function(app) {
         res.render('register', {layout: 'base'});
     });
     app.post('/client/register.html', function(req, res) {
-        console.log({
-            email: req.body.emailInput,
-            password: req.body.passwordInput
-        })
         Person.create({
             email: req.body.emailInput,
             password: req.body.passwordInput
@@ -66,9 +62,11 @@ module.exports = function(app) {
            } else {
             Person.findById(accessToken.userId, function(err, person) {
                 person.preferences(function(err, preferences) {
-                    console.log(person, err, preferences)
                     preferences = _.indexBy(preferences, 'documentId');
-                    Person.suggestions(accessToken.userId, req.query.locationId, function(err, suggestions) {
+                    Person.suggestions(accessToken.userId, req.query.locationId, req.query.type, req.query.duration, req.query.group, req.query.season, function(err, suggestions) {
+                        if(err) {
+                            return res.send(err);
+                        }
                         _.each(suggestions.documents, function(document, i) { suggestions.documents[i].preference = preferences[document.id] } )
                         res.render('suggestions', {layout: 'base', suggestions: suggestions, person: person, accessToken: accessToken.id});
                     });

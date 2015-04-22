@@ -19,22 +19,23 @@ var return_response = function(request, responses, cb) {
     });
 }
 
-var request_suggestions = function(services, person, location, cb) {
+var request_suggestions = function(services, data, cb) {
     // TODO: Log final response
     var Request = loopback.getModel('request');
 
     services = _.filter(services, function(service) { return service.subscriptions().length > 0 })
     services = _.sample(services, 5)
     var subscriptions = _.map(services, function(service) { return _.sample(service.subscriptions()) })
-    var data = {'person': person, 'location': location};
+    var person = data.person;
+    var location = data.location;
 
-    Request.create({body: data, personId: person.id, locationId: location.id}, function(err, request) {
+    Request.create({body: data, personId: person.id, locationId: location.id}, function(err, requestInstance) {
         async.map(subscriptions, function(subscription, cb) {
             request.post(subscription.callback_url, {json: data}, function(err, response, body) {
                 if(!err && response.statusCode != 200) {
                     err = "HTTP status code must be 200, it was: " + response.statusCode;
                 }
-                request.responses.create({'subscriptionId': subscription.id, body: body, error: err}, function(err, response) {
+                requestInstance.responses.create({'subscriptionId': subscription.id, body: body, error: err}, function(err, response) {
                     cb(null, response);
                 });
             });
@@ -49,7 +50,7 @@ module.exports = function(Person) {
     Person.disableRemoteMethod('__delete__preferences', false);
     Person.disableRemoteMethod('__destroyById__preferences', false);
 
-    Person.suggestions = function(personId, locationId, cb) {
+    Person.suggestions = function(personId, locationId, type, duration, group, season, cb) {
         var Service = loopback.getModel('service');
         var Location = loopback.getModel('location');
 
@@ -70,8 +71,17 @@ module.exports = function(Person) {
                 cb("Invalid personId.", null);
             } else if(results.location === null) {
                 cb("Invalide locationId.", null);
+            } else if(!(type in [null, 'Business', 'Holiday', 'Other'])) {
+                cb("Invalid trip type.", null);
+            } else if(!(duration in [null, 'Night out', 'Day trip', 'Weekend trip', 'Longer'])) {
+                cb("Invalid trip duration.", null);
+            } else if(!(group in [null, 'Alone', 'Friends', 'Family', 'Other'])) {
+                cb("Invalid group type.", null);
+            } else if(!(season in [null, 'Winter', 'Summer', 'Autumn', 'Spring'])) {
+                cb("Invalid trip season.", null);
             } else {
-                request_suggestions(results.services, results.person, results.location, cb)
+                var data = {person: results.person, location: results.location, type: type, duration: duration, group: group, season: season};
+                request_suggestions(results.services, data,  cb)
             }
         })
     }
@@ -82,6 +92,10 @@ module.exports = function(Person) {
             accepts: [
                 {arg: 'id', type: 'Number', required: true, description: 'User id'},
                 {arg: 'locationId', type: 'Number', required: true, http: {source: 'query'}},
+                {arg: 'type', type: 'String', http: {source: 'query'}},
+                {arg: 'duration', type: 'String', http: {source: 'query'}},
+                {arg: 'group', type: 'String', http: {source: 'query'}},
+                {arg: 'season', type: 'String', http: {source: 'query'}}
             ],
             description: 'Get a list of ordered suggestions.',
             http: {path: '/:id/suggestions'},

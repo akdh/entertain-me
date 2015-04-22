@@ -1,8 +1,55 @@
-        <h1>Pick a city</h1>
-        <div>
-            {{#each locations}}
-            <div>
-                <p><a href="/client/suggestions.html?locationId={{ id }}&access_token={{ ../accessToken }}">{{ name }}, {{ state }}</a></p>
+        <h1>Plan your trip</h1>
+        <form method="GET" action="/client/suggestions.html">
+            <input type="hidden" name="access_token" value="{{ accessToken }}">
+            <div class="form-group">
+                <label for="locationId">City for trip</label>
+                <select id="locationId" name="locationId" class="form-control">
+                    <option selected value="">N/A</option>
+                    {{#each locations}}
+                    <option value="{{ id }}">{{ name }}, {{ state }}</option>
+                    {{/each}}
+                </select>
             </div>
-            {{/each}}
-        </div>
+            <div class="form-group">
+                <label for="type">Trip type</label>
+                <select id="type" name="type" class="form-control">
+                    <option selected value="">N/A</option>
+                    <option value="Business">Business</option>
+                    <option value="Holiday">Holiday</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="duration">Trip duration</label>
+                <select id="duration" name="duration" class="form-control">
+                    <option selected value="">N/A</option>
+                    <option value="Night out">Night out</option>
+                    <option value="Day trip">Day trip</option>
+                    <option value="Weekend trip">Weekend trip</option>
+                    <option value="Longer">Longer</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="group">Traveling company</label>
+                <select id="group" name="group" class="form-control">
+                    <option selected value="">N/A</option>
+                    <option value="Alone">Traveling alone</option>
+                    <option value="Friends">Traveling with a group of friends</option>
+                    <option value="Family">Traveling with family</option>
+                    <option value="Other">Traveling with other group</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="season">Trip season</label>
+                <select id="season" name="season" class="form-control">
+                    <option selected value="">N/A</option>
+                    <option value="Winter">Winter</option>
+                    <option value="Summer">Summer</option>
+                    <option value="Autumn">Autumn (Fall)</option>
+                    <option value="Spring">Spring</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-default">Get suggestions</button>
+            </div>
+        </form>
