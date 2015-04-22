@@ -7,6 +7,12 @@
     "id": {
       "type": "number",
       "required": true
+    },
+    "gender": {
+      "type": "String"
+    },
+    "age": {
+      "type": "String"
     }
   },
   "validations": [],

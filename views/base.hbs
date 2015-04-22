@@ -13,7 +13,7 @@
         <nav class="navbar navbar-default">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <a href="/" class="navbar-brand">Entertain Me!</a>
+                    <a href="/client/locations.html?access_token={{ accessToken }}" class="navbar-brand">Entertain Me!</a>
                 </div>
                 <div>
                     <a href="/client/register.html" class="btn btn-default navbar-btn">Register</a>
@@ -21,6 +21,8 @@
                     {{#if accessToken}}
                     <a href="/client/logout.html?access_token={{ accessToken }}" class="
                     btn btn-default navbar-btn">Logout</a>
+                    <a href="/client/person.html?access_token={{ accessToken }}" class="
+                    btn btn-default navbar-btn">Profile</a>
                     {{/if}}
                 </div>
             </div>

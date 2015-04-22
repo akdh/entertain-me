@@ -55,6 +55,33 @@ module.exports = function(app) {
         })
     });
 
+    app.get('/client/person.html', function(req, res) {
+        AccessToken.findForRequest(req, {}, function(err, accessToken) {
+            if(accessToken == undefined) {
+                return res.redirect('/client/login.html');
+           } else {
+                res.render('person', {layout: 'base', accessToken: accessToken.id});
+           }
+        });
+
+    });
+    app.post('/client/person.html', function(req, res) {
+        AccessToken.findForRequest(req, {}, function(err, accessToken) {
+            if(accessToken == undefined) {
+                return res.redirect('/client/login.html');
+            } else {
+                Person.findById(accessToken.userId, function(err, person) {
+                    person.updateAttributes({gender: req.body.gender, age: req.body.age}, function(err, person) {
+                        if(err) {
+                            return res.send(err);
+                        }
+                        res.render('person', {layout: 'base', accessToken: accessToken.id});
+                    })
+                });
+            }
+        });
+    });
+
     app.get('/client/suggestions.html', function(req, res) {
         AccessToken.findForRequest(req, {}, function(err, accessToken) {
             if(accessToken == undefined) {
@@ -63,7 +90,7 @@ module.exports = function(app) {
             Person.findById(accessToken.userId, function(err, person) {
                 person.preferences(function(err, preferences) {
                     preferences = _.indexBy(preferences, 'documentId');
-                    Person.suggestions(accessToken.userId, req.query.locationId, req.query.type, req.query.duration, req.query.group, req.query.season, function(err, suggestions) {
+                    Person.suggestions(accessToken.userId, req.query.locationId, req.query.type || null, req.query.duration || null, req.query.group || null, req.query.season || null, function(err, suggestions) {
                         if(err) {
                             return res.send(err);
                         }
