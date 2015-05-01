@@ -1,6 +1,7 @@
 var loopback = require('loopback');
 var bodyParser = require('body-parser');
 var _ = require('underscore');
+var valid_tags = require('../valid-tags.json').tags;
 
 module.exports = function(app) {
     var Person = app.models.Person;
@@ -32,7 +33,7 @@ module.exports = function(app) {
             password: req.body.passwordInput
         }, function(err, token) {
             if(err) {
-                res.render('login', {layout: 'base', error: err});
+                res.render('login', {layout: 'base', tags: JSON.stringify(valid_tags), error: err});
             } else {
                 res.redirect('/client/locations.html?access_token=' + token.id)
             }
@@ -40,7 +41,7 @@ module.exports = function(app) {
     });
 
     app.get('/client/register.html', function(req, res) {
-        res.render('register', {layout: 'base'});
+        res.render('register', {layout: 'base', tags: JSON.stringify(valid_tags)});
     });
     app.post('/client/register.html', function(req, res) {
         Person.create({
@@ -48,7 +49,7 @@ module.exports = function(app) {
             password: req.body.passwordInput
         }, function(err, token) {
             if(err) {
-                res.render('register', {layout: 'base', error: err});
+                res.render('register', {layout: 'base', tags: JSON.stringify(valid_tags), error: err});
             } else {
                 res.redirect('/client/locations.html?access_token=' + token.id)
             }
@@ -60,7 +61,7 @@ module.exports = function(app) {
             if(accessToken == undefined) {
                 return res.redirect('/client/login.html');
            } else {
-                res.render('person', {layout: 'base', accessToken: accessToken.id});
+                res.render('person', {layout: 'base', tags: JSON.stringify(valid_tags), accessToken: accessToken.id});
            }
         });
 
@@ -75,7 +76,7 @@ module.exports = function(app) {
                         if(err) {
                             return res.send(err);
                         }
-                        res.render('person', {layout: 'base', accessToken: accessToken.id});
+                        res.render('person', {layout: 'base', tags: JSON.stringify(valid_tags), accessToken: accessToken.id});
                     })
                 });
             }
@@ -95,7 +96,7 @@ module.exports = function(app) {
                             return res.send(err);
                         }
                         _.each(suggestions.documents, function(document, i) { suggestions.documents[i].preference = preferences[document.id] } )
-                        res.render('suggestions', {layout: 'base', suggestions: suggestions, person: person, accessToken: accessToken.id});
+                        res.render('suggestions', {layout: 'base', tags: JSON.stringify(valid_tags), raw_tags: valid_tags, suggestions: suggestions, person: person, accessToken: accessToken.id});
                     });
                 })
             })
@@ -109,7 +110,7 @@ module.exports = function(app) {
                 return res.redirect('/client/login.html');
            } else {
                 Location.find(function(err, locations) {
-                    res.render('locations', {layout: 'base', locations: locations, accessToken: accessToken.id});
+                    res.render('locations', {layout: 'base', tags: JSON.stringify(valid_tags), locations: locations, accessToken: accessToken.id});
                 })
            }
         });

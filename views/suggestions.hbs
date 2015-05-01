@@ -5,6 +5,8 @@
                 <h2><a href="{{ url }}" target="_blank">{{ title }}</a></h2>
                 <p>{{ description }}</p>
                 <p><a href="{{ url }}" target="_blank">{{ url }}</a></p>
+                <fieldset>
+                <legend>Rating</legend>
                 <div class="btn-group form-group" data-toggle="buttons">
                     <label class="btn btn-default">
                         <input type="radio" value="1" name="doc{{ id }}_rating"> 1
@@ -22,12 +24,31 @@
                         <input type="radio" value="5" name="doc{{ id }}_rating"> 5
                     </label>
                 </div>
+                </fieldset>
                 <div class="form-group">
-                    <label for="doc{{ id }}_tags">Tags</label>
+                    <label for="doc{{ id }}_tags">Tags <a href="" data-toggle="modal" data-target="#tagsHelp">[?]</a></label>
                     <select multiple name="doc{{ id }}_tags" id="doc{{ id }}_tags" class="typeahead from-control"></select>
                 </div>
             </div>
             {{/each}}
+        </div>
+        <div class="modal" id="tagsHelp" tabindex="-1" role="dialog" aria-labelledby="tagsHelpLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="tagsHelpLabel">Tags</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Add any of the following tags for reasons you like this attraction.</p>
+                        <ul>
+                        {{#each raw_tags}}
+                        <li>{{ . }}</li>
+                        {{/each}}
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
         <script>
             if (!String.prototype.endsWith) {
