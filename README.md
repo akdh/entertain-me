@@ -83,10 +83,15 @@ If the URL is successfully registered a POST request will be sent to this URL wh
         "preferences": [
           {
             "documentId": 4536,
-            "rating": 3
+            "rating": 3,
+            "tags": ["Shopping"]
           }
         ]
-      }
+      },
+      "type": null,
+      "duration": "Day trip",
+      "group": "Friends",
+      "season": null
     }
 
 The response to the request should be a list of valid point-of-interest IDs:
