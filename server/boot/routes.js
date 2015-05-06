@@ -12,6 +12,10 @@ module.exports = function(app) {
 
     app.set('view engine', 'hbs');
 
+    app.get('/client/', function(req, res) {
+        return res.redirect('/client/suggestions.html');
+    });
+
     app.get('/client/logout.html', function(req, res) {
         AccessToken.findForRequest(req, {}, function(err, accessToken) {
             if(accessToken == undefined) {
